@@ -17,19 +17,23 @@ module mux_tx
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n)
             uart_tx <= 1'b1 ;   // 空闲的时候是1
-        case (bps_cnt)
-            0 : uart_tx <= 1'b1 ;   // 空闲位(我在想有没有必要?)
-            1 : uart_tx <= START_BIT ;
-            2 : uart_tx <= data_byte_reg[0] ;   // LSB顺序,所以是从低位开始
-            3 : uart_tx <= data_byte_reg[1] ;
-            4 : uart_tx <= data_byte_reg[2] ;
-            5 : uart_tx <= data_byte_reg[3] ;
-            6 : uart_tx <= data_byte_reg[4] ;
-            7 : uart_tx <= data_byte_reg[5] ;
-            8 : uart_tx <= data_byte_reg[6] ;
-            9 : uart_tx <= data_byte_reg[7] ;
-            10: uart_tx <= STOP_BIT ;
-            default : uart_tx <= 1'b1 ;
-        endcase
+        else 
+        begin
+            case (bps_cnt)
+                0 : uart_tx <= 1'b1 ;   // 空闲位(我在想有没有必要?)
+                1 : uart_tx <= START_BIT ;
+                2 : uart_tx <= data_byte_reg[0] ;   // LSB顺序,所以是从低位开始
+                3 : uart_tx <= data_byte_reg[1] ;
+                4 : uart_tx <= data_byte_reg[2] ;
+                5 : uart_tx <= data_byte_reg[3] ;
+                6 : uart_tx <= data_byte_reg[4] ;
+                7 : uart_tx <= data_byte_reg[5] ;
+                8 : uart_tx <= data_byte_reg[6] ;
+                9 : uart_tx <= data_byte_reg[7] ;
+                10: uart_tx <= STOP_BIT ;
+                default : uart_tx <= 1'b1 ;
+            endcase
+        end
+        
     end
 endmodule

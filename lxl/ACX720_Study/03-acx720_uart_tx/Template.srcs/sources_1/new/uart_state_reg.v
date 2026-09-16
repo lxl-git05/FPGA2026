@@ -1,13 +1,13 @@
-// 5. 串口TX忙标志位,忙的时候是0,空闲的时候是1
+// 5. 串口TX忙标志位,忙的时候是1,空闲的时候是0
 `timescale 1ns / 1ps
 module uart_state_reg(
         input wire clk,
         input wire rst_n,
         input wire [3:0] bps_cnt,
         input wire send_en,
-        output reg uart_state   // 忙的时候是0
+        output reg uart_state   // 忙的时候是1
     );
-    // 忙的时候是0,或者被关闭的时候也是0
+    // 忙的时候是1
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n)
             uart_state <= 1'b0 ;

@@ -40,6 +40,6 @@ module uart_tx_test(
         .baud_set(3'd0), 
         .uart_tx(uart_tx), 
         .tx_done(), 
-        .uart_state(led) 
+        .uart_state(LED) 
     ); 
 endmodule
