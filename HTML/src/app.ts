@@ -15,7 +15,7 @@ try { pendingDraft = localStorage.getItem(draftKey); const saved = JSON.parse(lo
 const graph = new Graph({
   container: $('#canvas'), autoResize: true, async: false,
   background: { color: '#fafbfc' }, grid: { size: 10, visible: true, type: 'dot', args: { color: '#d7dfe4', thickness: 1 } },
-  panning: { enabled: true, eventTypes: ['rightMouseDown','mouseWheelDown'] }, mousewheel: { enabled: true, modifiers: null, minScale: .15, maxScale: 3 },
+  panning: { enabled: true, eventTypes: ['mouseWheelDown'] }, mousewheel: { enabled: true, modifiers: null, minScale: .15, maxScale: 3 },
   scaling: { min: .15, max: 3 }, interacting: { edgeLabelMovable: false, arrowheadMovable: false },
   connecting: {
     snap: { radius: 18 }, allowBlank: false, allowNode: false, allowEdge: false, allowLoop: true, allowMulti: 'withPort',
@@ -31,6 +31,42 @@ const graph = new Graph({
 graph.use(new Selection({ enabled: true, multiple: true, rubberband: true, modifiers: ['shift'], multipleSelectionModifiers: ['shift','ctrl','meta'], showNodeSelectionBox: true, showEdgeSelectionBox: false, pointerEvents: 'none' }));
 graph.use(new Transform({ resizing: { enabled: node => project.blocks.find(b => b.id === node.id)?.kind === 'block', minWidth: 100, minHeight: 80 }, rotating: false }));
 graph.use(new Snapline({ enabled: true })); graph.use(new Export());
+
+// Capture right-button gestures before X6's node/port handlers can select or drag.
+let rightPan: { x: number; y: number; tx: number; ty: number } | undefined;
+let suppressContextUntil = 0;
+function endRightPan() {
+  if (!rightPan) return;
+  rightPan = undefined;
+  suppressContextUntil = Date.now() + 250;
+  document.body.classList.remove('canvas-panning');
+  captureView(); storeDraft(); updateInfo();
+}
+$('#canvas').addEventListener('mousedown', e => {
+  if (e.button !== 2) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  if (e.buttons & 1) return;
+  const t = graph.translate();
+  rightPan = { x: e.clientX, y: e.clientY, tx: t.tx, ty: t.ty };
+  document.body.classList.add('canvas-panning');
+  $('#status').textContent = '正在平移画布 · 松开右键结束';
+}, true);
+window.addEventListener('mousemove', e => {
+  if (!rightPan) return;
+  if (!(e.buttons & 2)) { endRightPan(); return; }
+  e.preventDefault(); e.stopImmediatePropagation();
+  graph.translate(rightPan.tx + e.clientX - rightPan.x, rightPan.ty + e.clientY - rightPan.y);
+}, true);
+window.addEventListener('mouseup', e => {
+  if (!rightPan || e.button !== 2) return;
+  e.preventDefault(); e.stopImmediatePropagation(); endRightPan();
+}, true);
+window.addEventListener('blur', endRightPan);
+window.addEventListener('contextmenu', e => {
+  if (rightPan || Date.now() < suppressContextUntil || (e.target as HTMLElement).closest('#canvas')) {
+    e.preventDefault(); e.stopImmediatePropagation();
+  }
+}, true);
 
 function selectedBlock(): Block | undefined { return selection.length === 1 ? project.blocks.find(b => b.id === selection[0]) : undefined; }
 function captureView() { const t = graph.translate(); project.view = { zoom: graph.zoom(), x: t.tx, y: t.ty }; }
