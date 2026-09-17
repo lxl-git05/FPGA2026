@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Block Studio · FPGA 模块构思</title><style>/* INLINE_STYLE */</style></head>
+<body>
+<header>
+  <div class="brand"><span class="brand-mark">▧</span><div>Block Studio<small>FPGA 模块构思工作台</small></div></div>
+  <div class="project-heading"><input id="project-name" aria-label="工程名称" value="UART 发送系统"><span class="offline"><i></i>离线 · 本地保存</span></div>
+  <nav><button data-action="new">新建</button><button data-action="open">打开工程</button><button data-action="save" class="primary">保存工程 <kbd>Ctrl S</kbd></button><button data-action="export" class="dark">导出图片 ↗</button></nav>
+</header>
+<div class="workspace">
+  <aside class="library-panel">
+    <div class="panel-heading">模块库 <span class="badge">LOCAL</span></div>
+    <label class="search"><span>⌕</span><input id="library-search" placeholder="搜索模块…" aria-label="搜索模块"></label>
+    <div class="section-title">基础元件 <span>点击添加</span></div>
+    <div class="primitives">
+      <button data-action="add-block"><span class="primitive-icon">▭</span><strong>自定义模块</strong><small>配置输入 / 输出端口</small><b>＋</b></button>
+      <button data-action="add-input"><span class="primitive-icon">→</span><strong>顶层输入</strong><small>从外部引入信号</small><b>＋</b></button>
+      <button data-action="add-output"><span class="primitive-icon">⇥</span><strong>顶层输出</strong><small>引出模块信号</small><b>＋</b></button>
+      <button data-action="add-junction"><span class="primitive-icon">•</span><strong>分支连接点</strong><small>共享信号 / 扇出</small><b>＋</b></button>
+    </div>
+    <div class="section-title">我的模块 <button data-action="import-module" class="text-button">导入 ＋</button></div>
+    <div id="module-library"></div>
+    <div class="section-title">示例工程</div>
+    <button class="example" data-action="example-uart"><span>01</span><div>UART 发送系统<small>层级封装 · 分支 · 反馈</small></div><b>↗</b></button>
+    <button class="example" data-action="example-key"><span>02</span><div>按键消抖模块<small>输入 / 输出 · 基础连线</small></div><b>↗</b></button>
+    <div class="library-foot"><span class="status-dot"></span>你的设计只保存在本机<button data-action="help" class="text-button">使用指南 ↗</button></div>
+  </aside>
+  <main>
+    <div class="toolbar">
+      <div><button data-action="undo" title="撤销 Ctrl+Z">↶ <span>撤销</span></button><button data-action="redo" title="重做 Ctrl+Shift+Z">↷</button><i></i><button data-action="copy">复制</button><button data-action="paste">粘贴</button><button data-action="delete">删除</button></div>
+      <div><button data-action="group" class="accent-button">▣ 封装模块</button><button data-action="collapse">展开 / 折叠</button><button data-action="align">左对齐</button><i></i><button data-action="grid" id="grid-toggle" class="active" title="网格吸附">⠿ 网格</button></div>
+    </div>
+    <div class="canvas-wrap"><div id="canvas"></div><div class="canvas-label"><span class="status-dot"></span><b id="canvas-title">UART 发送系统</b><span id="canvas-meta"></span></div>
+      <div class="canvas-help">拖动端口连线 <span>·</span> Shift 框选 <span>·</span> 右键拖动画布 <span>·</span> 双击模块折叠</div>
+      <div class="zoom-controls"><button data-action="zoom-out" aria-label="缩小">−</button><span id="zoom-value">100%</span><button data-action="zoom-in" aria-label="放大">＋</button><i></i><button data-action="fit">适应画布</button></div>
+      <div id="recovery" hidden><strong>发现上次编辑的草稿</strong><button data-action="recover" class="primary">恢复草稿</button><button data-action="dismiss-recovery">忽略</button></div>
+    </div>
+    <footer><span id="status">就绪</span><span id="warnings"></span><span id="save-state">草稿自动保存在本机</span></footer>
+  </main>
+  <aside class="inspector-panel"><div class="panel-heading">属性面板 <span class="badge" id="selection-kind">PROJECT</span></div><div id="inspector"></div></aside>
+</div>
+<div id="toast" role="status"></div>
+<dialog id="modal"><div class="modal-head"><h2 id="modal-title"></h2><button id="modal-close" aria-label="关闭">×</button></div><div id="modal-body"></div><div id="modal-actions"></div></dialog>
+<input type="file" id="file-input" accept=".json" hidden>
+<script>/* INLINE_SCRIPT */</script>
+</body></html>

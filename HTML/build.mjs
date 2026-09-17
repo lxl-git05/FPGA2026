@@ -1,0 +1,11 @@
+import { build } from 'esbuild';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+const result = await build({ entryPoints: ['src/app.ts'], bundle: true, write: false, format: 'iife', target: ['chrome110'], minify: true, legalComments: 'inline' });
+const css = await readFile('src/style.css', 'utf8');
+const template = await readFile('src/index.html', 'utf8');
+const notices = (await readFile('THIRD_PARTY_NOTICES.md','utf8')).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const js = result.outputFiles.find(f => f.path.endsWith('.js'))?.text ?? result.outputFiles[0].text;
+const vendorCSS = result.outputFiles.filter(f => f.path.endsWith('.css')).map(f => f.text).join('\n');
+await mkdir('dist', { recursive: true });
+await writeFile('dist/block-diagram-editor.html', template.replace('/* INLINE_STYLE */', css + '\n' + vendorCSS).replace('/* INLINE_SCRIPT */', () => js.replace(/<\/script/gi, '<\\/script')).replace('</body>',()=>`<details hidden><summary>Third-party licenses</summary><pre>${notices}</pre></details></body>`));
+console.log('Built dist/block-diagram-editor.html — offline, self-contained');
