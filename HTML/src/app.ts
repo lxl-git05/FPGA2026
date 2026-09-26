@@ -224,7 +224,33 @@ function renderLibrary(){const query=$<HTMLInputElement>('#library-search').valu
 }
 $('#library-search').addEventListener('input',renderLibrary);
 $('#project-name').addEventListener('change',()=>transact('工程名称已更新',()=>project.name=$<HTMLInputElement>('#project-name').value.trim()||'未命名工程'));
-$('#file-input').addEventListener('change',async()=>{const file=$<HTMLInputElement>('#file-input').files?.[0];if(!file)return;try{if(file.size>20*1024*1024)throw Error('文件超过 20 MB 限制');const data=parseFile(await file.text());if(fileMode==='open'){if(data.format!=='fpga-diagram')throw Error('请选择工程文件；模块文件请使用“导入模块”');const action=()=>load(data);if(dirty)confirmAction('打开工程','当前未保存的修改将被替换，请先保存需要保留的工程。',action);else action();}else{if(data.format!=='fpga-module')throw Error('请选择模块包文件');library.push(data);saveLibrary();const at=center();transact('模块已导入画布和模块库',()=>selection=[instantiate(project,data,at)]);}}catch(e){fail(e);}finally{$<HTMLInputElement>('#file-input').value='';}});
+function openProjectFile(data:Project){
+  const action=()=>load(data);
+  if(dirty)confirmAction('打开工程','当前未保存的修改将被替换，请先保存需要保留的工程。',action);else action();
+}
+function importModuleFile(data:ModuleFile){
+  const candidate=clone(project),id=instantiate(candidate,data,center());
+  transact('模块已导入画布和模块库',()=>{project=candidate;selection=[id];});
+  library.push(data);saveLibrary();
+}
+function chooseProjectImport(data:Project){
+  const blocks=data.blocks.filter(b=>b.kind==='block');
+  modal('这是一个工程文件',`<p>你选择的是完整工程 JSON。若要继续编辑整张图，请打开工程；若只想复用其中一个模块，可在下面选择并导入，保留当前画布。</p><label>工程：${esc(data.name)}</label>${blocks.length?`<label>选择要复用的模块（包含内部结构）</label><select id="import-project-block">${blocks.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}${b.composite?' · 封装模块':''}${b.parent?' · 子模块':''}</option>`).join('')}</select><p>提取模块会保留内部连线，不带入与工程其他模块之间的外部连接。</p>`:'<p>这个工程中没有可提取的矩形模块，可以直接打开完整工程。</p>'}`,[
+    {text:'取消',action:closeModal},
+    {text:'打开完整工程',action:()=>{closeModal();openProjectFile(data);}},
+    ...(blocks.length?[{text:'导入选中模块',primary:true,action:()=>{const m=moduleFile(data,$<HTMLSelectElement>('#import-project-block').value);closeModal();importModuleFile(m);}}]:[]),
+  ]);
+}
+$('#file-input').addEventListener('change',async()=>{
+  const file=$<HTMLInputElement>('#file-input').files?.[0];if(!file)return;
+  try{
+    if(file.size>20*1024*1024)throw Error('文件超过 20 MB 限制');
+    const data=parseFile(await file.text());
+    if(data.format==='fpga-module')importModuleFile(data);
+    else if(fileMode==='open')openProjectFile(data);
+    else chooseProjectImport(data);
+  }catch(e){fail(e);}finally{$<HTMLInputElement>('#file-input').value='';}
+});
 
 async function exportImage(format:'svg'|'png',onlySelected:boolean,ratio:number,transparent:boolean){
   let p=clone(project);if(onlySelected){const b=selectedBlock();if(!b)throw Error('请选择单个模块再导出');const m=moduleFile(p,b.id);p.blocks=m.blocks;p.wires=m.wires;}
