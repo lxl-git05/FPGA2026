@@ -2,7 +2,8 @@
 `timescale 1ns / 1ps
 module Seg8 #(
     parameter integer CLK_FREQ_HZ = 50000000,
-    parameter integer SCAN_FREQ_HZ = 1000
+    parameter integer SCAN_FREQ_HZ = 1000,
+    parameter integer DECIMAL_SPLIT = 0 // 1：十进制左右四位分别去除前导零
 )(
     input wire clk,
     input wire reset_n,
@@ -110,7 +111,13 @@ module Seg8 #(
             converting <= 1'b1;
         end else if ((sampled_format != 2'b01) || (conversion_step == 31)) begin
             pending_digits <= converted_digits;
-            pending_mask <= (sampled_format == 2'b11) ? 8'b0 : visible_mask(converted_digits);
+            if (sampled_format == 2'b11)
+                pending_mask <= 8'b0;
+            else if ((sampled_format == 2'b01) && DECIMAL_SPLIT)
+                pending_mask <= (visible_mask({16'b0, converted_digits[31:16]}) << 4) |
+                                (visible_mask({16'b0, converted_digits[15:0]}) & 8'h0f);
+            else
+                pending_mask <= visible_mask(converted_digits);
             converting <= 1'b0;
         end else begin
             bcd <= bcd_next;

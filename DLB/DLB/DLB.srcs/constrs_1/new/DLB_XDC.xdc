@@ -45,6 +45,26 @@ set_property PACKAGE_PIN J21 [get_ports uart_rx]
 set_property IOSTANDARD LVCMOS33 [get_ports uart_rx]
 
 # ============================================
+# 编码器
+# ============================================
+set_property PACKAGE_PIN A13 [get_ports encoder_a]
+set_property PACKAGE_PIN A15 [get_ports encoder_b]
+
+set_property IOSTANDARD LVCMOS33 [get_ports encoder_a]
+set_property IOSTANDARD LVCMOS33 [get_ports encoder_b]
+
+# ============================================
+# TB6612驱动电机
+# ============================================
+set_property PACKAGE_PIN A18 [get_ports  tb_in1]
+set_property PACKAGE_PIN F13 [get_ports  tb_in2]
+set_property PACKAGE_PIN E13 [get_ports  tb_pwm]
+
+set_property IOSTANDARD LVCMOS33 [get_ports  tb_in1]
+set_property IOSTANDARD LVCMOS33 [get_ports  tb_in2]
+set_property IOSTANDARD LVCMOS33 [get_ports  tb_pwm]
+
+# ============================================
 # SPI Flash Boot
 # ============================================
 set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
