@@ -7,6 +7,7 @@
     4. 正转时position_cnt增加。
     5. 反转时position_cnt减少。
     6. 支持单独清零编码器累计位置。
+    7. DIR_REVERSE=0保持原AB方向，=1交换计数正负方向。
 
     注意:
     该模块只负责编码器计数，
@@ -26,12 +27,15 @@
         position_cnt :
             编码器四倍频后的累计位置计数
 
-        direction:
-            1 -> 正方向
-            0 -> 反方向
+    参数:
+        DIR_REVERSE : 0为原方向，1为反方向；顺/逆时针对应关系由实际AB接线确定。
+        position_cnt的正负表示相对零点的位置，当前运动方向应看计数增量。
 */
 
-module encoder_quad
+`timescale 1ns / 1ps
+module encoder_quad #(
+    parameter integer DIR_REVERSE = 0
+)
 (
     input  wire                     clk,
     input  wire                     rst_n,
@@ -41,10 +45,10 @@ module encoder_quad
 
     input  wire                     position_zero,
 
-    output reg signed [31:0]        position_cnt,
-    output reg                      direction
+    output reg signed [31:0]        position_cnt
 );
 
+localparam signed [31:0] COUNT_STEP = (DIR_REVERSE == 0) ? 32'sd1 : -32'sd1;
 
 // ============================================================
 // 编码器输入同步
@@ -108,7 +112,7 @@ reg [1:0] encoder_ab_last;
 // AB相四倍频解码
 // ============================================================
 //
-// 正方向:
+// 原AB正方向（DIR_REVERSE=0）:
 //
 //      00
 //       ↓
@@ -121,10 +125,10 @@ reg [1:0] encoder_ab_last;
 //      00
 //
 // 每发生一次有效跳变:
-// position_cnt + 1
+// position_cnt + COUNT_STEP；DIR_REVERSE=1时计数方向相反
 //
 // 反方向则:
-// position_cnt - 1
+// position_cnt - COUNT_STEP
 //
 // ============================================================
 
@@ -136,7 +140,6 @@ begin
 
         position_cnt    <= 32'sd0;
         encoder_ab_last <= 2'b00;
-        direction       <= 1'b0;
 
     end
 
@@ -177,8 +180,7 @@ begin
                 4'b1000:
                 begin
 
-                    position_cnt <= position_cnt + 32'sd1;
-                    direction    <= 1'b1;
+                    position_cnt <= position_cnt + COUNT_STEP;
 
                 end
 
@@ -193,8 +195,7 @@ begin
                 4'b0100:
                 begin
 
-                    position_cnt <= position_cnt - 32'sd1;
-                    direction    <= 1'b0;
+                    position_cnt <= position_cnt - COUNT_STEP;
 
                 end
 

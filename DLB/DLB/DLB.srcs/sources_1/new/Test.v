@@ -4,8 +4,11 @@
 // 按键3（key_in[2]）松开：PWM取反换向；PWM为0时仍停止，按键4未使用。
 // PWM正值正转、负值反转；PWM幅值2500为100%占空比，PWM频率20kHz。
 // 数码管左四位显示|PWM|，右四位显示|编码器四倍频累计计数|的末四位，均为十进制。
+// ENCODER_DIR_REVERSE=0保持原编码器方向，=1反向；按实际顺/逆时针计数结果选择。
 `timescale 1ns / 1ps
-module Test(
+module Test #(
+    parameter integer ENCODER_DIR_REVERSE = 0
+)(
     input wire clk,
     input wire rst_n,
     input wire [3:0] key_in,
@@ -67,16 +70,15 @@ module Test(
             .tb_pwm(tb_pwm)
         );
 
-    // 正转加计数，反转减计数，系统复位时清零。
-    encoder_quad
+    // 编码器正方向由参数配置，系统复位时清零。
+    encoder_quad #(.DIR_REVERSE(ENCODER_DIR_REVERSE))
         encoder_quad_inst (
             .clk(clk),
             .rst_n(rst_n),
             .encoder_a(encoder_a),
             .encoder_b(encoder_b),
             .position_zero(1'b0),
-            .position_cnt(position_cnt),
-            .direction()
+            .position_cnt(position_cnt)
         );
 
     Seg8 #(.DECIMAL_SPLIT(1))
