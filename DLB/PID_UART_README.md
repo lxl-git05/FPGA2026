@@ -1,93 +1,118 @@
-# 减速电机位置环：UART 调参和 goal / real / set
+# FPGA 倒立摆自动启摆与双环 PID
 
-`DLB/DLB.srcs/sources_1/new/Test.v` 恢复提交 `3445a1df2909839e3544259d3ce0e9b2b66bf9c1` 的位置环行为，并接入现有 Protocol V1 收发模块。无需切换 Git 提交。原有 PID、编码器、按键、数码管和电机驱动模块继续复用。
+当前 `Test.v` 已由单位置环测试替换为完整自动启摆顶层，目标器件为 ACX720 / `xc7a35tfgg484-2`，系统时钟 50MHz。上电和复位后电机停止，开始运行需要按下 K3。
 
-## 使用
+`MyPID.v` 保持原成品模块完全不变。`Test.v` 直接例化两个 `PID_Core`：`angle_pid` 为角度内环，`position_pid` 为位置外环；各自拥有目标、反馈、系数、定时触发和状态。采样寄存、串级连接、PWM换算及UART编码由控制层负责。
 
-1. 烧录仓库根目录下的 `DLB/build/pid_uart/Test.bit`。Vivado 工程的器件为 `xc7a35tfgg484-2`，顶层为 `Test`。
-2. 复位时当前位置作为零点，目标为 0，Kp/Ki/Kd 恢复默认值。按键1松开加102计数，按键2松开减102计数；按键3松开回到复位原点，不清零编码器；按键4未使用。以408计数/圈计算，102计数约90°。
-3. 在 `FPGA-Monitor` 目录运行 `npm.cmd run dev`，用 Chrome / Edge 打开 localhost，点击连接串口，使用 **115200、8N1**。
-4. 收到数据后，按下面的 ID 表给通道命名。仅对 **0x10、0x11、0x12** 开启 Writable，填写适合的滑块范围。滑块直接调节；数值框按 Enter 发送。看到 `SYNCED` 表示 FPGA 上传的参数 RAW 与请求相同。
-5. 位置 goal/real 可放左轴，set 放右轴。数码管左4位为 `|set|`，右4位为 `|real|` 的最后4位，符号请看上位机。
+## 按键与显示
 
-## 通道表
+| 按键 | 操作 |
+| --- | --- |
+| K1 按下 | 位置目标 +34 个编码器计数，即 408 / 4 / 3 |
+| K2 按下 | 位置目标 -34 个编码器计数 |
+| K3 按下 | 停止时开始自动启摆；运行时停止，包括启摆和稳摆阶段 |
+| K4 | 未使用 |
 
-| PARAM_ID | 建议名称 | TYPE | 含义 | 可写 |
-| --- | --- | --- | --- | --- |
-| 0x01 | goal | INT32 (0x01) | PID 采样时的目标位置，编码器计数 | 否 |
-| 0x02 | real | INT32 (0x01) | 同次采样的编码器累计位置，计数 | 否 |
-| 0x03 | error | INT32 (0x01) | goal − real；超出INT32时饱和 | 否 |
-| 0x04 | set | INT32 (0x01) | PID 控制输出，带方向的 PWM 计数，−2500～2500 | 否 |
-| 0x10 | Kp | Q16.16 (0x03) | 比例系数 | 是 |
-| 0x11 | Ki | Q16.16 (0x03) | 每个采样周期的积分系数 | 是 |
-| 0x12 | Kd | Q16.16 (0x03) | 误差差分系数 | 是 |
+按键经过现有模块消抖，按下触发一次，长按不会重复累加。K1/K2同时按下不改变目标；目标范围为 -4080..4080。K3停止优先于控制运算。数码管左四位显示状态，右四位显示相对位置绝对值末四位：0停止、1判断、21..24向左启摆序列、31..34向右启摆序列、4稳摆。正负位置通过UART查看。
 
-每次 PID 更新后上传一帧：COUNT=7、LEN=43、总长度53字节，约50帧/秒。goal/real/set 以及当次运算使用的三个系数整帧锁存；发送期间不变。UART 默认一帧约4.6ms，下一次采样前能发送完成；发送忙时跳过该次上传，控制计算继续。协议没有额外 ACK，通过后续 Telemetry 确认参数更新。
+## STM32 控制基线与移植
 
-`set` 是送入驱动器的控制量，`|set|/2500` 对应占空比，不是速度反馈；PWM 发生器在 PWM 周期边界更新占空比。正负方向保持该提交的 `TB6612 DIR_REVERSE=1`、`ENCODER_DIR_REVERSE=0`。STBY 沿用板上直接接3V3的方式。ADC片选关闭，保留ADC顶层端口以兼容现有引脚约束。
+参考实际阅读的工程：
 
-## 参数与算法
+`D:\github\2-2-STM32\Tools\1-1-江协科技\2-PID教程\程序源码\程序源码\程序源码-有注释版\16-倒立摆-自动启摆`
 
-在 `Test.v` 模块参数里修改 `KP_INIT / KI_INIT / KD_INIT` 可以改变烧录后的初始值；UART 修改存于寄存器，复位后恢复初始值。
+核心逻辑来自 `User/main.c`、`User/PID.c`、`User/PID.h`；定时和硬件行为同时核对了 `System/Timer.c`、`Hardware/Encoder.c`、`Hardware/AD.c`、`Hardware/Motor.c`、`Hardware/PWM.c`、`Hardware/Key.c`、`Hardware/Serial.c`。Timer使用72MHz/(72*1000)=1kHz；STM32 PWM使用72MHz/(36*100)=20kHz。PID参数已包含采样周期的影响，移植时不再乘/除dt。
 
-| 参数 | 默认 RAW / 整数 | 用途 |
+| 配置 | STM32 示例 | 当前 FPGA |
 | --- | --- | --- |
-| KP_INIT | 1623462 | 沿用位置环提交，Kp=1623462/65536 |
-| KI_INIT | 0 | 初始不积分 |
-| KD_INIT | 1341560 | 沿用位置环提交，Kd=1341560/65536 |
-| I_LIMIT | 500 | 积分项输出限幅 ±500，非Q格式 |
-| ENCODER_DIR_REVERSE | 0 | 0为原AB计数方向，1反向 |
+| 角度中心 | 2010 | **2060**，按用户实测值 |
+| 中心区间 | 中心 ±500，开区间 | **1560 < ADC < 2560** |
+| 角度环周期 | 5ms | 5ms |
+| 位置环周期 | 50ms | 50ms |
+| 启摆判断 | 40ms | 40ms |
+| 基础采样/状态计时 | 1ms | 1ms |
+| 启摆力度/持续时间 | 35%，100ms | 35%，100ms |
+| 角度 Kp / Ki / Kd | 0.3 / 0.01 / 0.4 | 同参数的 Q16.16 近似 |
+| 位置 Kp / Ki / Kd | 0.4 / 0 / 4 | **0.4 / 0.016 / 4**，Ki按用户实测更新 |
+| 两环输出范围 | -100..100 | -100..100 |
+| 位置目标步长 | ±408 | **±34**，按用户要求 |
 
-Q16.16 的 `RAW = 系数 × 65536`，上传原始补码，PC负责量化。例如系数1.0对应65536，0.5对应32768。可先给 Kp/Kd 配置滑块0～100、步长0.01，Ki配置0～10、步长0.001；这是控件范围示例，实际稳定参数取决于电机、负载和接线。
+位置式公式：`e=goal-real; I+=Ki*e; set=Kp*e+I+Kd*(e-last_e)`。原PID的目标/反馈/输出为有符号整数，系数及内部积分为Q16.16。串级关系：`a_goal=2060-p_set`，角度环输出作用于电机；位置环输出单位为ADC计数修正量。两个环在共同的50ms边界先分别锁存输入，再在下一拍同时触发，内环使用更新前的外环输出；新外环输出进入下一次角度计算。
 
-控制周期固定 `Ts=0.02s`，沿用 `PID_Core` 的离散算法：
+自动启摆先执行 +35% 驱动，再执行 -35% 驱动，每段100ms，状态分派之间各有1ms，与源码21/22/23/24顺序一致。结束后进入判断，每40ms采样。右侧区间三个角度值的中间值最小则再次左向施力；左侧区间中间值最大则右向施力。连续两次在中心区间内进入稳摆，只清PID状态，不改变位置原点或按键设置的目标。稳摆时离开中心区间自动停止，需要K3重新启动。
 
-```text
-error = goal - real
-P = Kp * error
-I = clamp(I + Ki * error, -I_LIMIT, I_LIMIT)
-D = Kd * (error - last_error)
-set = clamp(P + I + D, -2500, 2500)
-```
+位置零点按用户要求在K3由停止切换到启动的那一刻记录，之后启摆及稳摆全过程保持不变。`p_real=编码器累计位置-启动时累计位置`，因此启摆造成的位移也计入反馈；`p_goal`始终保留按键设置的值。停止不重设零点，下次K3重新启动时记录新的起点；复位恢复上电零点及目标0。若启动前目标已为34，则稳摆目标是相对本次起点+34，而非自动改成0。
 
-内部保留Q格式小数，最终算术右移16位得到有符号整数。若从连续PID系数转换，`Ki_FPGA=Ki_continuous×0.02`，`Kd_FPGA=Kd_continuous/0.02`，Kp不变。积分项限幅有效，但没有额外实现基于输出饱和的条件积分或反算抗饱和。
+所有控制均在50MHz同一时钟域，毫秒时基为时钟使能，不产生低速派生时钟。启摆判断清空过期历史，必须收到足够的新样本。捕获和在线改参时清除对应积分/历史误差，避免重启D项突跳。相对位置使用32位有符号计数和独立零点偏移，超出INT32时饱和，不复刻STM32 int16_t位置回绕。
 
-收到合法 `SET_PARAM` 后只更新对应系数，同时清除积分、同步上次误差并将输出暂置0，下一次20ms控制周期重新运算。三个系数分别写入，不属于原子批量更新。ID不支持、TYPE不为Q16.16、CRC错误时不修改系数。目标位置由按键调整；协议不支持写入goal/real/set。
+与原浮点程序的数值差异：严格沿用原PID接口，外环输出、角度目标和内环输出均为整数。PID按原算术右移量化输出，负数向负无穷取整，内部积分仍保留小数；积分贡献通过原`i_limit`端口限幅±100（顶层 `I_LIMIT`）。原PID在Ki变为0时保持已有积分，而本工程每次UART改参都通过对应实例的`pid_clear`端口清积分，因此在线设置Ki=0不会留下旧积分。采样寄存只在控制层，PID触发比毫秒采样晚一个50MHz时钟（20ns），不改变5/50ms周期。PWM在控制层按整数`a_set*25`换成±2500计数。初始参数仅是移植起点，真实设备稳摆效果需要上板调参。
 
-## 引脚
+## 顶层硬件配置
 
-沿用 `DLB/DLB.srcs/constrs_1/new/DLB_XDC.xdc`，没有改动约束：
+| 顶层参数 | 默认值 | 用途 |
+| --- | --- | --- |
+| ADC_CHANNEL | 0 | ADC128S102 的摆角通道，接线尚待实物确认 |
+| CENTER_ANGLE | 2060 | 摆杆竖直向上的ADC值 |
+| CENTER_RANGE | 500 | 捕获及稳摆有效区间 |
+| START_PWM | 35 | 启摆百分比力度 |
+| START_TIME | 100 | 每段施力毫秒数，要求大于0 |
+| MOTOR_DIR_REVERSE | 1 | 沿用既有TB6612方向配置 |
+| ENCODER_DIR_REVERSE | 0 | 沿用既有编码器方向配置 |
+| I_LIMIT | 100 | 各环积分贡献的最大绝对值 |
 
-| 信号 | FPGA封装引脚 |
+ADC固定通道连续采样，SCLK为12.5MHz，第一帧丢弃以处理通道流水。每毫秒控制采集最近完整的12位数据；ADC模块超过约3ms未发布有效数据时禁止输出和启动。该检查针对采样模块新数据有效性，不能通过数字值判断模拟传感器断线。±35%对应PWM±875，±100%对应±2500，载波20kHz。停止时沿用现有驱动的零输出方式。
+
+| 接口 | FPGA引脚 |
 | --- | --- |
 | clk / rst_n | Y18 / B21 |
 | UART TX / RX | M15 / J21 |
 | encoder A / B | A13 / A15 |
 | TB6612 IN1 / IN2 / PWM | A18 / F13 / E13 |
-| key1 / key2 / key3 / key4 | F15 / A20 / B20 / A21 |
+| ADC SCLK / DIN / DOUT / CS_N | N5 / M5 / P6 / M6 |
+| K1 / K2 / K3 / K4 | F15 / A20 / B20 / A21 |
 
-外接UART使用3.3V TTL并共地，适配器TX接FPGA RX、RX接FPGA TX。方向校准沿用原提交；更换电机或AB线后需核对目标增大时反馈也增大。
+## UART 通道和初值
+
+115200 / 8N1，继续使用Protocol V1二进制帧，不是ASCII文本命令。50Hz遥测每帧12项，Payload=73字节，总帧83字节，发送约7.2ms；发送忙时丢弃当次旁路采样，不阻塞控制。发送期间全部字段冻结。停止和启摆时两环set为0，但real持续更新；启摆驱动力不属于PID输出。
+
+为兼容现有上位机配置，a_goal/a_set/p_set仍使用Q16.16线格式；控制层仅把整数值左移16位后发送。该串口编码不改变PID接口，也不增加PID计算精度。
+
+| ID（十六进制） | 简名 | 类型 | 单位 / 初始值 | 串口可写 |
+| --- | --- | --- | --- | --- |
+| 01 | a_goal | Q16.16 | ADC计数，2060 | 否 |
+| 02 | a_real | INT32 | ADC计数，0..4095 | 否 |
+| 03 | a_set | Q16.16 | PWM百分比，-100..100 | 否 |
+| 04 | p_goal | INT32 | 编码器计数，0 | 否 |
+| 05 | p_real | INT32 | 相对编码器计数 | 否 |
+| 06 | p_set | Q16.16 | ADC计数修正，-100..100 | 否 |
+| 10 | a_kp | Q16.16 | 0.3，RAW=19661 | 是 |
+| 11 | a_ki | Q16.16 | 0.01，RAW=655 | 是 |
+| 12 | a_kd | Q16.16 | 0.4，RAW=26214 | 是 |
+| 20 | p_kp | Q16.16 | 0.4，RAW=26214 | 是 |
+| 21 | p_ki | Q16.16 | 0.016，RAW=1049 | 是 |
+| 22 | p_kd | Q16.16 | 4，RAW=262144 | 是 |
+
+实际可表达值：19661/65536≈0.300003、655/65536≈0.009995、26214/65536≈0.399994、1049/65536≈0.01600647。串口仅接受10/11/12/20/21/22六个ID且TYPE必须为03；非法CRC、TYPE和其他ID均不改变控制。goal、启摆配置、启停和位置清零均不接受串口修改。每次复位恢复六个INIT参数。
+
+## FPGA Monitor 配置
+
+在 `DLB/FPGA-Monitor` 使用现有 `npm.cmd run dev` 启动，打开localhost，连接115200串口。12个通道自动发现；按上表重命名，仅给10/11/12/20/21/22开启Writable。建议 Kp 0..1，Ki 0..0.1，a_kd 0..1，p_kd 0..9，步长0.001；调参从既有初值开始。上位机源码没有硬编码这些ID的业务名称，因此无需修改网页。
+
+注意旧位置环的01..04名称/单位可能仍存在于localStorage，需按新表更新；旧03(error)现在为a_set，旧04(set)现在为p_goal。新PID输出03/06都是Q16.16，不能按INT32解释。下一帧系数遥测用于确认实际修改；已经开始发送的旧快照可能先到达，正常下一帧再同步。串口和电机模块均保留原引脚，不需要改XDC。
 
 ## 可复现验证和构建
 
-在仓库根目录执行（Vivado 2024.2 的 bin 需在 PATH，或使用下列绝对路径）：
+仓库根目录执行，Vivado 2024.2 的bin在PATH，或向测试脚本传入 `-VivadoBin 'E:\AppDownloadE\Vitis\Vivado\2024.2\bin'`：
 
 ```powershell
 & .\DLB\scripts\test_pid_uart.ps1
 node .\DLB\tests\check_pid_uart_codec.mjs
-```
-
-测试脚本支持 `-VivadoBin 'E:\AppDownloadE\Vitis\Vivado\2024.2\bin'`。如当前PowerShell限制脚本执行，可使用 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DLB\scripts\test_pid_uart.ps1`，仅影响该进程。
-
-构建时把日志和工具中间文件留在工作区的Claude_Temp：
-
-```powershell
-New-Item -ItemType Directory -Force .\Claude_Temp\PID_UART_validation | Out-Null
-Push-Location .\Claude_Temp\PID_UART_validation
+New-Item -ItemType Directory -Force .\Claude_Temp\pendulum_validation | Out-Null
+Push-Location .\Claude_Temp\pendulum_validation
 & 'E:\AppDownloadE\Vitis\Vivado\2024.2\bin\vivado.bat' -mode batch -source '..\..\DLB\scripts\build_pid_uart.tcl' -log build.log -journal build.jou
 Pop-Location
 ```
 
-输出位于 `DLB/build/pid_uart/`：`Test.bit`、`Test_routed.dcp`、时序/资源/DRC报告。脚本检查无锁存器、单系统时钟，以及布线后setup/hold通过，再生成bitstream。已有GUI工程已包含这些收发模块，也可直接以Test顶层重新综合和实现。
+构建目录仍沿用 `DLB/build/pid_uart/`，其中 `Test.bit` 现在是倒立摆固件；`Test_routed.dcp`、`timing.rpt`、`utilization.rpt`、`drc.rpt`为实现证据。测试中间文件均在 `Claude_Temp/`。现有GUI工程已包含ADC及协议模块，可直接重新综合实现Test顶层。脚本使用PerformanceOptimized综合及AggressiveExplore物理优化/布线，保持50MHz约束和成品PID源码不变，并在生成固件前检查setup/hold。
 
-本次仿真和实现结果见 [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md)。仿真反馈由测试台提供，尚未执行实际FPGA、电机或USB UART上板联调。
+测试结果与硬件验证边界见 `IMPLEMENTATION_REPORT.md` 的本轮倒立摆记录。尚未连接实物或下载FPGA，CH0、编码器计数/极性、电机方向与机械效果必须在实物验收。

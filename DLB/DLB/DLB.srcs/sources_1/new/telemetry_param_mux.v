@@ -1,196 +1,43 @@
-//////////////////////////////////////////////////////////////////////////////////
-// Module Name: telemetry_param_mux
-//
-// 功能：
-//   FPGA Telemetry 参数映射模块
-//
-// protocol_tx 给出：
-//
-//      param_index
-//
-// 本模块根据 param_index 返回：
-//
-//      param_id
-//      param_type
-//      param_value
-//
-// ================================================================
-// Protocol V1 数据类型：
-//
-// 0x01 = INT32
-// 0x02 = UINT32
-// 0x03 = Q16.16
-// 0x04 = Q8.24
-//
-// ================================================================
-//
-// 后续增加参数：
-//
-// 1. 增加 input
-// 2. 增加 PARAM_ID
-// 3. 增加 case(param_index)
-// 4. 修改 PARAM_COUNT
-//
-// protocol_tx 不需要修改
-//////////////////////////////////////////////////////////////////////////////////
-
+`timescale 1ns / 1ps
+// 上传双环goal/real/set及六个PID参数，与parameter_manager的ID保持一致。
 module telemetry_param_mux(
-    // ============================================================
-    // Protocol 查询索引
-    // ============================================================
-    input      [7:0]  param_index,
-    // ============================================================
-    // 来自 FPGA 其他模块的数据
-    // ============================================================
-    // 普通 INT32
-    input signed [31:0] target_position,
-    input signed [31:0] position,
-    input signed [31:0] error,
-    input signed [31:0] pid_output,
-
-    // PID Q16.16 参数
-    input signed [31:0] kp,
-    input signed [31:0] ki,
-    input signed [31:0] kd,
-
-    // ============================================================
-    // 输出给 protocol_tx
-    // ============================================================
-    output     [7:0]  param_count,
-    output reg [7:0]  param_id,
-    output reg [7:0]  param_type,
+    input wire [7:0] param_index,
+    input wire signed [31:0] a_goal,
+    input wire signed [31:0] a_real,
+    input wire signed [31:0] a_set,
+    input wire signed [31:0] p_goal,
+    input wire signed [31:0] p_real,
+    input wire signed [31:0] p_set,
+    input wire signed [31:0] a_kp,
+    input wire signed [31:0] a_ki,
+    input wire signed [31:0] a_kd,
+    input wire signed [31:0] p_kp,
+    input wire signed [31:0] p_ki,
+    input wire signed [31:0] p_kd,
+    output wire [7:0] param_count,
+    output reg [7:0] param_id,
+    output reg [7:0] param_type,
     output reg [31:0] param_value
-
 );
-
-
-    // ============================================================
-    // DATA TYPE
-    // ============================================================
-    localparam TYPE_INT32  = 8'h01;
-    localparam TYPE_UINT32 = 8'h02;
-    localparam TYPE_Q16_16 = 8'h03;
-    localparam TYPE_Q8_24  = 8'h04;
-
-    // ============================================================
-    // PARAM ID
-    // ============================================================
-    localparam ID_TARGET_POSITION = 8'h01;
-    localparam ID_POSITION        = 8'h02;
-    localparam ID_ERROR           = 8'h03;
-    localparam ID_PID_OUTPUT      = 8'h04;
-    localparam ID_KP              = 8'h10;
-    localparam ID_KI              = 8'h11;
-    localparam ID_KD              = 8'h12;
-
-    // ============================================================
-    // 当前需要发送的参数数量
-    // ============================================================
-    localparam [7:0] PARAM_COUNT = 8'd7;
-    assign param_count = PARAM_COUNT;
-
-    // ============================================================
-    // 参数 MUX
-    // ============================================================
+    assign param_count = 8'd12;
     always @(*) begin
-        // --------------------------------------------------------
-        // 默认值
-        //
-        // 防止组合逻辑产生 latch
-        // --------------------------------------------------------
-        param_id    = 8'h00;
-        param_type  = 8'h00;
-        param_value = 32'h0000_0000;
-        // --------------------------------------------------------
-        // 根据索引选择参数
-        // --------------------------------------------------------
+        param_id = 0;
+        param_type = 0;
+        param_value = 0;
         case (param_index)
-            // ====================================================
-            // 0 : Target Position
-            // ====================================================
-            8'd0:
-            begin
-                param_id = ID_TARGET_POSITION;
-                param_type = TYPE_INT32;
-                param_value = target_position;
-            end
-            // ====================================================
-            // 1 : Position
-            // ====================================================
-            8'd1:
-            begin
-                param_id = ID_POSITION;
-                param_type = TYPE_INT32;
-                param_value = position;
-            end
-            // ====================================================
-            // 2 : Error
-            // ====================================================
-            8'd2:
-            begin
-                param_id = ID_ERROR;
-                param_type = TYPE_INT32;
-                param_value = error;
-            end
-            // ====================================================
-            // 3 : PID Output
-            // ====================================================
-            8'd3:
-            begin
-                param_id = ID_PID_OUTPUT;
-                param_type = TYPE_INT32;
-                param_value = pid_output;
-            end
-
-            // ====================================================
-            // 4 : Kp
-            //
-            // FPGA内部直接发送 Q16.16 RAW
-            //
-            // 例如：
-            //
-            // Kp = 0.25
-            //
-            // RAW =
-            //
-            // 0.25 × 65536
-            // = 16384
-            // = 0x00004000
-            //
-            // ====================================================
-            8'd4:
-            begin
-                param_id = ID_KP;
-                param_type = TYPE_Q16_16;
-                param_value = kp;
-            end
-            // ====================================================
-            // 5 : Ki
-            // ====================================================
-            8'd5:
-            begin
-                param_id = ID_KI;
-                param_type = TYPE_Q16_16;
-                param_value = ki;
-            end
-            // ====================================================
-            // 6 : Kd
-            // ====================================================
-            8'd6:
-            begin
-                param_id = ID_KD;
-                param_type = TYPE_Q16_16;
-                param_value = kd;
-            end
-            // ====================================================
-            // Default
-            // ====================================================
-            default:
-            begin
-                param_id = 8'h00;
-                param_type = 8'h00;
-                param_value = 32'h0000_0000;
-            end
+            0: begin param_id = 8'h01; param_type = 8'h03; param_value = a_goal; end
+            1: begin param_id = 8'h02; param_type = 8'h01; param_value = a_real; end
+            2: begin param_id = 8'h03; param_type = 8'h03; param_value = a_set; end
+            3: begin param_id = 8'h04; param_type = 8'h01; param_value = p_goal; end
+            4: begin param_id = 8'h05; param_type = 8'h01; param_value = p_real; end
+            5: begin param_id = 8'h06; param_type = 8'h03; param_value = p_set; end
+            6: begin param_id = 8'h10; param_type = 8'h03; param_value = a_kp; end
+            7: begin param_id = 8'h11; param_type = 8'h03; param_value = a_ki; end
+            8: begin param_id = 8'h12; param_type = 8'h03; param_value = a_kd; end
+            9: begin param_id = 8'h20; param_type = 8'h03; param_value = p_kp; end
+            10: begin param_id = 8'h21; param_type = 8'h03; param_value = p_ki; end
+            11: begin param_id = 8'h22; param_type = 8'h03; param_value = p_kd; end
+            default: ;
         endcase
     end
 endmodule

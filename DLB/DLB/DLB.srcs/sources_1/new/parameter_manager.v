@@ -65,7 +65,13 @@ module parameter_manager
 
     parameter signed [31:0] KI_INIT = 32'sd0,
 
-    parameter signed [31:0] KD_INIT = 32'sd0
+    parameter signed [31:0] KD_INIT = 32'sd0,
+
+    parameter [7:0] ID_KP = 8'h10,
+
+    parameter [7:0] ID_KI = 8'h11,
+
+    parameter [7:0] ID_KD = 8'h12
 
 )
 (
@@ -125,11 +131,7 @@ module parameter_manager
     // 必须与 telemetry_param_mux 保持一致
     // ============================================================
 
-    localparam [7:0] ID_KP = 8'h10;
-
-    localparam [7:0] ID_KI = 8'h11;
-
-    localparam [7:0] ID_KD = 8'h12;
+    // ID由实例参数指定；角度环10/11/12，位置环20/21/22。
 
 
     // ============================================================
