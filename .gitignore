@@ -183,3 +183,4 @@ vivado*.backup.log
 /lxl/Ignore
 Claude_Change.md
 /Claude_Temp
+/DLB/FPGA-Monitor

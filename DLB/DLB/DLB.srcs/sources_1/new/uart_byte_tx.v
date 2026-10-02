@@ -1,148 +1,333 @@
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 武汉芯路恒科技有限公司
-// Engineer: 小梅哥团队
-// Web: www.corecourse.cn
-// 
-// Create Date: 2020/07/20 00:00:00
-// Design Name: uart_tx
 // Module Name: uart_byte_tx
-// Project Name: uart_tx
-// Target Devices: XC7A35T-2FGG484I
-// Tool Versions: Vivado 2018.3
-// Description: 串口发送模块
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
+//
+// 功能：
+//   UART 单字节发送模块
+//
+// 默认系统时钟：
+//   50 MHz
+//
+// baud_set：
+//   0 -> 9600
+//   1 -> 19200
+//   2 -> 38400
+//   3 -> 57600
+//   4 -> 115200
+//
+// 使用方法：
+//   1. uart_state == 0 时表示串口空闲
+//   2. 将 data_byte 准备好
+//   3. send_en 拉高 1 个 clk 周期
+//   4. 模块开始发送 1 Byte
+//   5. 发送完成后 tx_done 拉高 1 个 clk 周期
+//
+// 注意：
+//   uart_state == 1 时，新的 send_en 会被忽略
+//
+// 兼容性：
+//   保持原 uart_byte_tx 接口不变，原 uart_data_tx 可继续使用
 //////////////////////////////////////////////////////////////////////////////////
 
 module uart_byte_tx(
-	clk,
-	rst_n,
-  
-	data_byte,
-	send_en,   
-	baud_set,  
-	
-	uart_tx,  
-	tx_done,   
-	uart_state 
+    clk,
+    rst_n,
+
+    data_byte,
+    send_en,
+    baud_set,
+
+    uart_tx,
+    tx_done,
+    uart_state
 );
 
-	input clk ;    //模块全局时钟输入，50M
-	input rst_n;    //复位信号输入，低有效
-	input [7:0]data_byte;  //待传输8bit数据
-	input send_en;    //发送使能
-	input [2:0]baud_set;   //波特率设置
-	
-	output reg uart_tx;    //串口输出信号
-	output reg tx_done;    //1byte数据发送完成标志
-	output reg uart_state; //发送数据状态
-	
-	wire reset=~rst_n;
-	localparam START_BIT = 1'b0;
-	localparam STOP_BIT = 1'b1; 
-	
-	reg bps_clk;	     //波特率时钟	
-	reg [15:0]div_cnt;      //分频计数器	
-	reg [15:0]bps_DR;       //分频计数最大值	
-	reg [3:0]bps_cnt;      //波特率时钟计数器	
-	reg [7:0]data_byte_reg;//data_byte寄存后数据
-	
-	always@(posedge clk or posedge reset)
-	if(reset)
-		uart_state <= 1'b0;
-	else if(send_en)
-		uart_state <= 1'b1;
-	else if(bps_cnt == 4'd11)
-		uart_state <= 1'b0;
-	else
-		uart_state <= uart_state;
-	
-	always@(posedge clk or posedge reset)
-	if(reset)
-		data_byte_reg <= 8'd0;
-	else if(send_en)
-		data_byte_reg <= data_byte;
-	else
-		data_byte_reg <= data_byte_reg;
-	
-	always@(posedge clk or posedge reset)
-	if(reset)
-		bps_DR <= 16'd5207;
-	else begin
-		case(baud_set)
-			0:bps_DR <= 16'd5207;
-			1:bps_DR <= 16'd2603;
-			2:bps_DR <= 16'd1301;
-			3:bps_DR <= 16'd867;
-			4:bps_DR <= 16'd433;
-			default:bps_DR <= 16'd5207;			
-		endcase
-	end	
-	
-	//counter
-	always@(posedge clk or posedge reset)
-	if(reset)
-		div_cnt <= 16'd0;
-	else if(uart_state)begin
-		if(div_cnt == bps_DR)
-			div_cnt <= 16'd0;
-		else
-			div_cnt <= div_cnt + 1'b1;
-	end
-	else
-		div_cnt <= 16'd0;
-	
-	// bps_clk gen
-	always@(posedge clk or posedge reset)
-	if(reset)
-		bps_clk <= 1'b0;
-	else if(div_cnt == 16'd1)
-		bps_clk <= 1'b1;
-	else
-		bps_clk <= 1'b0;
-	
-	//bps counter
-	always@(posedge clk or posedge reset)
-	if(reset)	
-		bps_cnt <= 4'd0;
-	else if(bps_cnt == 4'd11)
-		bps_cnt <= 4'd0;
-	else if(bps_clk)
-		bps_cnt <= bps_cnt + 1'b1;
-	else
-		bps_cnt <= bps_cnt;
-		
-	always@(posedge clk or posedge reset)
-	if(reset)
-		tx_done <= 1'b0;
-	else if(bps_cnt == 4'd11)
-		tx_done <= 1'b1;
-	else
-		tx_done <= 1'b0;
-		
-	always@(posedge clk or posedge reset)
-	if(reset)
-		uart_tx <= 1'b1;
-	else begin
-		case(bps_cnt)
-			0:uart_tx <= 1'b1;
-			1:uart_tx <= START_BIT;
-			2:uart_tx <= data_byte_reg[0];
-			3:uart_tx <= data_byte_reg[1];
-			4:uart_tx <= data_byte_reg[2];
-			5:uart_tx <= data_byte_reg[3];
-			6:uart_tx <= data_byte_reg[4];
-			7:uart_tx <= data_byte_reg[5];
-			8:uart_tx <= data_byte_reg[6];
-			9:uart_tx <= data_byte_reg[7];
-			10:uart_tx <= STOP_BIT;
-			default:uart_tx <= 1'b1;
-		endcase
-	end	
+    input             clk;
+    input             rst_n;
+
+    input      [7:0]  data_byte;
+    input             send_en;
+    input      [2:0]  baud_set;
+
+    output reg        uart_tx;
+    output reg        tx_done;
+    output reg        uart_state;
+
+
+    // ============================================================
+    // UART 参数
+    // ============================================================
+
+    localparam START_BIT = 1'b0;
+    localparam STOP_BIT  = 1'b1;
+
+
+    // ============================================================
+    // 内部寄存器
+    // ============================================================
+
+    reg [15:0] baud_div;
+    reg [15:0] div_cnt;
+
+    // bit_cnt:
+    //
+    // 0     Start
+    // 1~8   Data[0] ~ Data[7]
+    // 9     Stop
+    //
+    reg [3:0] bit_cnt;
+
+    reg [7:0] data_byte_reg;
+
+
+    // ============================================================
+    // 波特率设置
+    //
+    // 50 MHz 时钟
+    //
+    // 一个 bit 的时钟周期数：
+    // baud_div + 1
+    // ============================================================
+
+    always @(*) begin
+
+        case (baud_set)
+
+            3'd0:
+                baud_div = 16'd5207;    // 9600
+
+            3'd1:
+                baud_div = 16'd2603;    // 19200
+
+            3'd2:
+                baud_div = 16'd1301;    // 38400
+
+            3'd3:
+                baud_div = 16'd867;     // 57600
+
+            3'd4:
+                baud_div = 16'd433;     // 115200
+
+            default:
+                baud_div = 16'd5207;
+
+        endcase
+
+    end
+
+
+    // ============================================================
+    // UART TX 主逻辑
+    //
+    // 8N1:
+    //
+    // Start
+    // D0
+    // D1
+    // ...
+    // D7
+    // Stop
+    //
+    // UART 数据位是低位先发
+    // ============================================================
+
+    always @(posedge clk or negedge rst_n) begin
+
+        if (!rst_n) begin
+
+            uart_tx       <= 1'b1;
+
+            tx_done       <= 1'b0;
+            uart_state    <= 1'b0;
+
+            div_cnt       <= 16'd0;
+            bit_cnt       <= 4'd0;
+
+            data_byte_reg <= 8'd0;
+
+        end
+
+        else begin
+
+            // tx_done 为单周期脉冲
+            tx_done <= 1'b0;
+
+
+            // ====================================================
+            // UART 空闲
+            // ====================================================
+
+            if (!uart_state) begin
+
+                uart_tx <= 1'b1;
+
+                div_cnt <= 16'd0;
+                bit_cnt <= 4'd0;
+
+
+                // 只有空闲时才接受发送请求
+                if (send_en) begin
+
+                    // 锁存待发送数据
+                    data_byte_reg <= data_byte;
+
+                    uart_state <= 1'b1;
+
+                    // 立即进入起始位
+                    uart_tx <= START_BIT;
+
+                end
+
+            end
+
+
+            // ====================================================
+            // UART 正在发送
+            // ====================================================
+
+            else begin
+
+                if (div_cnt >= baud_div) begin
+
+                    div_cnt <= 16'd0;
+
+
+                    case (bit_cnt)
+
+                        // Start 已发送完成
+                        // 开始发送 Data[0]
+                        4'd0:
+                        begin
+
+                            uart_tx <= data_byte_reg[0];
+
+                            bit_cnt <= 4'd1;
+
+                        end
+
+
+                        4'd1:
+                        begin
+
+                            uart_tx <= data_byte_reg[1];
+
+                            bit_cnt <= 4'd2;
+
+                        end
+
+
+                        4'd2:
+                        begin
+
+                            uart_tx <= data_byte_reg[2];
+
+                            bit_cnt <= 4'd3;
+
+                        end
+
+
+                        4'd3:
+                        begin
+
+                            uart_tx <= data_byte_reg[3];
+
+                            bit_cnt <= 4'd4;
+
+                        end
+
+
+                        4'd4:
+                        begin
+
+                            uart_tx <= data_byte_reg[4];
+
+                            bit_cnt <= 4'd5;
+
+                        end
+
+
+                        4'd5:
+                        begin
+
+                            uart_tx <= data_byte_reg[5];
+
+                            bit_cnt <= 4'd6;
+
+                        end
+
+
+                        4'd6:
+                        begin
+
+                            uart_tx <= data_byte_reg[6];
+
+                            bit_cnt <= 4'd7;
+
+                        end
+
+
+                        4'd7:
+                        begin
+
+                            uart_tx <= data_byte_reg[7];
+
+                            bit_cnt <= 4'd8;
+
+                        end
+
+
+                        // Data[7]发送完成
+                        // 开始发送停止位
+                        4'd8:
+                        begin
+
+                            uart_tx <= STOP_BIT;
+
+                            bit_cnt <= 4'd9;
+
+                        end
+
+
+                        // Stop Bit 已保持完整一个bit周期
+                        4'd9:
+                        begin
+
+                            uart_tx <= 1'b1;
+
+                            uart_state <= 1'b0;
+
+                            tx_done <= 1'b1;
+
+                            bit_cnt <= 4'd0;
+
+                        end
+
+
+                        default:
+                        begin
+
+                            uart_tx <= 1'b1;
+
+                            uart_state <= 1'b0;
+
+                            bit_cnt <= 4'd0;
+
+                        end
+
+                    endcase
+
+                end
+
+                else begin
+
+                    div_cnt <= div_cnt + 16'd1;
+
+                end
+
+            end
+
+        end
+
+    end
+
 
 endmodule
