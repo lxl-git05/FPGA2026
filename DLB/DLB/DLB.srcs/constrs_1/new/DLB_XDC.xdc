@@ -65,6 +65,20 @@ set_property IOSTANDARD LVCMOS33 [get_ports  tb_in2]
 set_property IOSTANDARD LVCMOS33 [get_ports  tb_pwm]
 
 # ============================================
+# ADC采样模块
+# ============================================
+
+set_property IOSTANDARD LVCMOS33 [get_ports ADC_SCLK]
+set_property IOSTANDARD LVCMOS33 [get_ports ADC_DIN]
+set_property IOSTANDARD LVCMOS33 [get_ports ADC_DOUT]
+set_property IOSTANDARD LVCMOS33 [get_ports ADC_CS_N]
+
+set_property PACKAGE_PIN N5 [get_ports ADC_SCLK]
+set_property PACKAGE_PIN M5 [get_ports ADC_DIN]
+set_property PACKAGE_PIN P6 [get_ports ADC_DOUT]
+set_property PACKAGE_PIN M6 [get_ports ADC_CS_N]
+
+# ============================================
 # SPI Flash Boot
 # ============================================
 set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
