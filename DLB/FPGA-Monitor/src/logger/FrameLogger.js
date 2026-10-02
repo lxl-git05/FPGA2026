@@ -1,0 +1,20 @@
+/**
+ * Responsibility: Bounded communication records and raw-HEX formatting.
+ * Allowed dependencies: Events.
+ * Forbidden responsibilities: Parsing UART, experimental sample storage.
+ * Public API: add(), filtered(), clear(), revision.
+ * Architecture invariants: At most capacity log records, independent of recording.
+ */
+import { Events } from '../core/Events.js';
+export const toHex = bytes => Array.from(bytes ?? [], b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+export class FrameLogger extends Events {
+  constructor(capacity = 2000) { super(); this.capacity = capacity; this.entries = []; this.revision = 0; }
+  add(direction, summary, bytes) {
+    const entry = { time: new Date().toISOString(), direction, summary, hex: toHex(bytes) };
+    this.entries.push(entry);
+    if (this.entries.length > this.capacity) this.entries.splice(0, this.entries.length - this.capacity);
+    this.revision++; return entry;
+  }
+  filtered(filters, limit = 150) { return this.entries.filter(e => filters.includes(e.direction)).slice(-limit); }
+  clear() { this.entries = []; this.revision++; }
+}
