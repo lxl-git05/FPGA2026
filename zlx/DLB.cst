@@ -1,0 +1,171 @@
+// ===========================================================================
+// 工程   : DLB (倒立摆姿态控制)      顶层: Test.v
+// 器件   : GW2A-LV55PG484C8/I7  (高云 GW2A-55, PG484, C, -8/I7)
+// 工具   : 云源 Gowin EDA  Physical Constraints File (*.cst)
+// 依据   : 《J280姿态控制系统开发套件用户手册V1》第 3.2 / 3.3 节管脚分配表
+//          ① 3.2.2 时钟输入  ② 3.2.5 按键/复位/拨码  ③ 3.2.7 Type-C 串口
+//          ④ 3.3.2 ADC     ⑤ 3.3.3 电机驱动芯片   ⑥ 3.3.4 电机接口(含编码器)
+// 说明   : 本文件与顶层 Test.v 的端口一一对应; 注释中标注手册信号名、BANK、电平
+//          使用方法: 复制到 工程目录/src/ 下(如 pin.cst), 在云源中
+//          Project -> Add File 加入本工程, 然后 Synthesize 即可。
+// 注意   : 1) BANK_3 的 VCCO 为 1.5V(手册 3.2.3 表: VCCO3=1.5V), 故按键/复位
+//             相关 pin 用 LVCMOS15; BANK_2/BANK_4/BANK_5 的 VCCO 为 3.3V, 用 LVCMOS33。
+//          2) ADC_DIN 与 ds/sh_cp/st_cp 在本开发套件上无对应网络, 见文件末尾说明。
+// ===========================================================================
+
+
+// ---------------------------------------------------------------------------
+// 一、系统时钟 (手册 3.2.2 时钟输入, 表: Clk_50M = M19, BANK_2, 3.3V)
+//     Test.v: input clk  ->  50MHz 有源晶振, 全系统唯一时钟
+// ---------------------------------------------------------------------------
+IO_LOC  "clk" M19;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 二、复位 (手册 3.2.5, 表: SW5&RST = AB3, BANK_5, 按键按下为低)
+//     Test.v: input rst_n  ->  低有效复位, 复用按键 SW5
+// ---------------------------------------------------------------------------
+IO_LOC  "rst_n" AB3;
+IO_PORT "rst_n" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 三、按键 (手册 3.2.5, 表: SW1=T18 / SW2=R18 / SW3=U20 / SW4=T20, BANK_3, 1.5V)
+//     共阴极轻触按键, 按下=0, 松开=1 (与 Key.v 的 KEY_UNPRESSED=1 一致)
+//     Test.v: input [3:0] key_in
+//        key_in[0] = SW1 -> K1: 目标位置 +34  (测试样例中定义)
+//        key_in[1] = SW2 -> K2: 目标位置 -34
+//        key_in[2] = SW3 -> K3: 自动起摆 / 停止
+//        key_in[3] = SW4 -> K4: 顶层未使用(key_in[3] 被综合优化掉)
+//     注意: SW4(T20) 在 PG484 封装上是 SSPI 复用/专用脚, 不能直接当普通 IO,
+//           实测 PnR 报 PR2017 "dedicated pin (SSPI)"。顶层本来也不用 K4,
+//           所以这里不约束 key_in[3]; 若以后要用 K4, 需要在
+//           工程设置 Dual-Purpose Pin 里把 SSPI 设为 "use as regular IO"。
+// ---------------------------------------------------------------------------
+IO_LOC  "key_in[0]" T18;
+IO_PORT "key_in[0]" IO_TYPE=LVCMOS15 PULL_MODE=UP BANK_VCCIO=1.5;
+IO_LOC  "key_in[1]" R18;
+IO_PORT "key_in[1]" IO_TYPE=LVCMOS15 PULL_MODE=UP BANK_VCCIO=1.5;
+IO_LOC  "key_in[2]" U20;
+IO_PORT "key_in[2]" IO_TYPE=LVCMOS15 PULL_MODE=UP BANK_VCCIO=1.5;
+//IO_LOC  "key_in[3]" T20;   // SW4: SSPI 专用脚, 见上; 顶层未使用
+//IO_PORT "key_in[3]" IO_TYPE=LVCMOS15 PULL_MODE=UP BANK_VCCIO=1.5;
+
+
+// ---------------------------------------------------------------------------
+// 四、串口 (手册 3.2.7 Type-C 串口, CH340, 表: K20 / L20, BANK_2, 3.3V)
+//     Test.v: uart_rx 输入、uart_tx 输出; 波特率 115200 / 8N1
+//     手册该表"描述"列写的是 CH340 一侧的 TXD/RXD 名称, 与网络名相反:
+//       网络名 B2_35A_K20_TXD  ->  FPGA 输出 uart_tx  ->  K20
+//       网络名 B2_35A_L20_RXD  ->  FPGA 输入 uart_rx  ->  L20
+//     若上板发现收发颠倒(能发不能收), 把 K20/L20 对调即可。
+// ---------------------------------------------------------------------------
+IO_LOC  "uart_rx" L20;
+IO_PORT "uart_rx" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+IO_LOC  "uart_tx" K20;
+IO_PORT "uart_tx" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8 BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 五、ADC 3PA1030 (手册 3.3.2, 10bit / 50MSPS 并行 ADC, 全部 BANK_2, 3.3V)
+//     AD1_CLK=G18 (25MHz 采样时钟), AD1_OE=H20 (低=输出使能)
+//     AD1_D0..AD1_D9 依次为 L21 M21 J20 J19 D19 H18 H19 G19 G17 E19
+//     Test.v: input [9:0] ADC_DOUT / output ADC_SCLK / output ADC_CS_N
+//             (adc128s102.v 内: ADC_SCLK -> ad1_clk, ADC_CS_N -> ad1_oe_n)
+// ---------------------------------------------------------------------------
+IO_LOC  "ADC_SCLK" G18;
+IO_PORT "ADC_SCLK" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC  "ADC_CS_N" H20;
+IO_PORT "ADC_CS_N" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+
+IO_LOC  "ADC_DOUT[0]"  L21;
+IO_PORT "ADC_DOUT[0]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[1]"  M21;
+IO_PORT "ADC_DOUT[1]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[2]"  J20;
+IO_PORT "ADC_DOUT[2]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[3]"  J19;
+IO_PORT "ADC_DOUT[3]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[4]"  D19;
+IO_PORT "ADC_DOUT[4]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[5]"  H18;
+IO_PORT "ADC_DOUT[5]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[6]"  H19;
+IO_PORT "ADC_DOUT[6]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[7]"  G19;
+IO_PORT "ADC_DOUT[7]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[8]"  G17;
+IO_PORT "ADC_DOUT[8]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+IO_LOC  "ADC_DOUT[9]"  E19;
+IO_PORT "ADC_DOUT[9]"  IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 六、TB6612FNG 电机驱动 A 通道 (手册 3.3.3, 全部 BANK_4, 3.3V)
+//     PWMA=Y18, AIN1=Y17, AIN2=Y19
+//     Test.v: tb_in1 / tb_in2 / tb_pwm  (tb6612_motor_driver.v)
+//     A 通道对应电机接口 XH1, 该接口同时带编码器 1A/1B
+// ---------------------------------------------------------------------------
+IO_LOC  "tb_pwm"  Y18;
+IO_PORT "tb_pwm"  IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC  "tb_in1"  Y17;
+IO_PORT "tb_in1"  IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC  "tb_in2"  Y19;
+IO_PORT "tb_in2"  IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 七、增量式编码器 (手册 3.3.4 电机接口 XH1 的 1A/1B, BANK_4, 3.3V)
+//     1A=Y20, 1B=AA20
+//     Test.v: encoder_a / encoder_b  (encoder_quad.v, 四倍频计数)
+//     若计数方向与真实方向相反, 改顶层参数 ENCODER_DIR_REVERSE=1 即可,
+//     或改接 XH2 的 2A=W18 / 2B=W17 (见文件末尾备用资源)。
+// ---------------------------------------------------------------------------
+IO_LOC  "encoder_a" Y20;
+IO_PORT "encoder_a" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+IO_LOC  "encoder_b" AA20;
+IO_PORT "encoder_b" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 八、8 位 74HC595 数码管 (Seg8.v: ds / sh_cp / st_cp) —— 待定
+//     本开发套件(手册 2.4 / 表 3-1 硬件资源)没有数码管, 也没有 74HC595,
+//     手册未给出这三根线的管脚; 若实物是把外接 595 模块接到 80Pin 扩展排针,
+//     请按实际飞线把下面三行改成对应管脚后去掉注释。
+//     不写这三行也能综合, PnR 会自动分配管脚(会有 unconstrained 警告)。
+// ---------------------------------------------------------------------------
+//IO_LOC  "ds"    <扩展排针管脚>;
+//IO_PORT "ds"    IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+//IO_LOC  "sh_cp" <扩展排针管脚>;
+//IO_PORT "sh_cp" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+//IO_LOC  "st_cp" <扩展排针管脚>;
+//IO_PORT "st_cp" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 九、本设计未使用、但板上存在、需要时可启用的管脚 (备查, 全部注释)
+//     手册 3.2.5 LED:        FPGA_LED1=U18, LED2=U19, LED3=U17, LED4=T17 (BANK_3,1.5V)
+//     手册 3.2.5 拨码开关:   B3_SW1=W20, B3_SW2=V20                        (BANK_3,1.5V)
+//     手册 3.2.2 27MHz:      Clk_27M=B20 (BANK_2, 3.3V)
+//     手册 3.3.2 ADC:        AD1_OTR=F18 (超量程指示, ADC 输出, 勿由 FPGA 驱动)
+//     手册 3.3.3 电机 B 通道: PWMB=V14, BIN1=AA17, BIN2=V15               (BANK_4,3.3V)
+//     手册 3.3.4 编码器 2:   2A=W18, 2B=W17                               (BANK_4,3.3V)
+// ---------------------------------------------------------------------------
+//IO_LOC  "led[0]" U18;   IO_PORT "led[0]" IO_TYPE=LVCMOS15 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=1.5;
+//IO_LOC  "led[1]" U19;   IO_PORT "led[1]" IO_TYPE=LVCMOS15 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=1.5;
+//IO_LOC  "led[2]" U17;   IO_PORT "led[2]" IO_TYPE=LVCMOS15 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=1.5;
+//IO_LOC  "led[3]" T17;   IO_PORT "led[3]" IO_TYPE=LVCMOS15 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=1.5;
+//IO_LOC  "clk_27m" B20;  IO_PORT "clk_27m" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
+//IO_LOC  "enc2_a"  W18;  IO_PORT "enc2_a"  IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+//IO_LOC  "enc2_b"  W17;  IO_PORT "enc2_b"  IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+//IO_LOC  "tb_pwm_b"  V14;  IO_PORT "tb_pwm_b"  IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+//IO_LOC  "tb_in1_b"  AA17; IO_PORT "tb_in1_b"  IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+//IO_LOC  "tb_in2_b"  V15;  IO_PORT "tb_in2_b"  IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+
+
+// ---------------------------------------------------------------------------
+// 十、说明: ADC_DIN (adc128s102.v 中作为 adc_stby_n, 恒 1) 在 3PA1030 与底板上
+//     没有对应网络(手册 3.3.2 只列出 CLK/OE/D0~D9/OTR), 因此不约束;
+//     若你的板子把 STBY 引到了 F18(AD1_OTR) 以外的空脚, 按实际补一行即可。
+// ---------------------------------------------------------------------------
