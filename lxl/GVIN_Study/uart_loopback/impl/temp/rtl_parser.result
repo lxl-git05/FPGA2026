@@ -1,0 +1,88 @@
+[
+ {
+  "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_data_rx.v",
+  "InstLine" : 41,
+  "InstName" : "uart_data_rx",
+  "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_data_rx.v",
+  "ModuleLine" : 41,
+  "ModuleName" : "uart_data_rx",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_data_rx.v",
+    "InstLine" : 73,
+    "InstName" : "uart_byte_rx",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+    "ModuleLine" : 36,
+    "ModuleName" : "uart_byte_rx"
+   }
+  ]
+ },
+ {
+  "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_data_tx.v",
+  "InstLine" : 46,
+  "InstName" : "uart_data_tx",
+  "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_data_tx.v",
+  "ModuleLine" : 46,
+  "ModuleName" : "uart_data_tx",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_data_tx.v",
+    "InstLine" : 79,
+    "InstName" : "uart_byte_tx",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+    "ModuleLine" : 31,
+    "ModuleName" : "uart_byte_tx"
+   }
+  ]
+ },
+ {
+  "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+  "InstLine" : 8,
+  "InstName" : "top",
+  "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+  "ModuleLine" : 8,
+  "ModuleName" : "top",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+    "InstLine" : 43,
+    "InstName" : "gen_keys[0].key_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/Key.v",
+    "ModuleLine" : 19,
+    "ModuleName" : "key"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+    "InstLine" : 43,
+    "InstName" : "gen_keys[1].key_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/Key.v",
+    "ModuleLine" : 19,
+    "ModuleName" : "key"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+    "InstLine" : 43,
+    "InstName" : "gen_keys[2].key_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/Key.v",
+    "ModuleLine" : 19,
+    "ModuleName" : "key"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+    "InstLine" : 56,
+    "InstName" : "uart_byte_rx_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+    "ModuleLine" : 36,
+    "ModuleName" : "uart_byte_rx"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/top.v",
+    "InstLine" : 66,
+    "InstName" : "uart_byte_tx_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+    "ModuleLine" : 31,
+    "ModuleName" : "uart_byte_tx"
+   }
+  ]
+ }
+]

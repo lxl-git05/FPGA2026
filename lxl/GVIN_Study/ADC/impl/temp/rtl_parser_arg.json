@@ -1,0 +1,25 @@
+{
+ "Device" : "GW2A-55C",
+ "Files" : [
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/ADC/src/adc.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/ADC/src/top.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+   "Type" : "verilog"
+  }
+ ],
+ "IncludePath" : [
+
+ ],
+ "LoopLimit" : 2000,
+ "ResultFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/ADC/impl/temp/rtl_parser.result",
+ "Top" : "",
+ "VerilogStd" : "verilog_2001",
+ "VhdlStd" : "vhdl_93"
+}

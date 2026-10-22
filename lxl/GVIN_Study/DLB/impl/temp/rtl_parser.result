@@ -1,0 +1,164 @@
+[
+ {
+  "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+  "InstLine" : 13,
+  "InstName" : "Top",
+  "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+  "ModuleLine" : 13,
+  "ModuleName" : "Top",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 71,
+    "InstName" : "io",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+    "ModuleLine" : 3,
+    "ModuleName" : "board_io",
+    "SubInsts" : [
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+      "InstLine" : 15,
+      "InstName" : "k1",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/PID_Motor/src/Key.v",
+      "ModuleLine" : 19,
+      "ModuleName" : "key"
+     },
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+      "InstLine" : 17,
+      "InstName" : "enc",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v",
+      "ModuleLine" : 36,
+      "ModuleName" : "encoder_quad"
+     },
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+      "InstLine" : 19,
+      "InstName" : "ad",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/adc_frontend.v",
+      "ModuleLine" : 4,
+      "ModuleName" : "adc_frontend"
+     },
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+      "InstLine" : 23,
+      "InstName" : "rx",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+      "ModuleLine" : 36,
+      "ModuleName" : "uart_byte_rx"
+     },
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+      "InstLine" : 24,
+      "InstName" : "tx",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+      "ModuleLine" : 31,
+      "ModuleName" : "uart_byte_tx"
+     },
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+      "InstLine" : 26,
+      "InstName" : "motor",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+      "ModuleLine" : 38,
+      "ModuleName" : "TB6612_Motor_driver",
+      "SubInsts" : [
+       {
+        "InstFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+        "InstLine" : 134,
+        "InstName" : "u_pwm_gen",
+        "ModuleFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/PWM.v",
+        "ModuleLine" : 48,
+        "ModuleName" : "pwm_gen"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 79,
+    "InstName" : "commands",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/command_rx.v",
+    "ModuleLine" : 4,
+    "ModuleName" : "command_rx"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 81,
+    "InstName" : "configuration",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/config_bank.v",
+    "ModuleLine" : 6,
+    "ModuleName" : "config_bank",
+    "SubInsts" : [
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/config_bank.v",
+      "InstLine" : 58,
+      "InstName" : "converter",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/gain_convert.v",
+      "ModuleLine" : 3,
+      "ModuleName" : "gain_convert"
+     }
+    ]
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 111,
+    "InstName" : "guard",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/safety_guard.v",
+    "ModuleLine" : 4,
+    "ModuleName" : "safety_guard"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 118,
+    "InstName" : "swing",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/swing_up.v",
+    "ModuleLine" : 4,
+    "ModuleName" : "swing_up"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 123,
+    "InstName" : "run",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/run_control.v",
+    "ModuleLine" : 3,
+    "ModuleName" : "run_control"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 129,
+    "InstName" : "controller",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
+    "ModuleLine" : 4,
+    "ModuleName" : "cascade_control",
+    "SubInsts" : [
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
+      "InstLine" : 35,
+      "InstName" : "pid_a",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
+      "ModuleLine" : 249,
+      "ModuleName" : "PID_Core"
+     },
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
+      "InstLine" : 39,
+      "InstName" : "pid_b",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
+      "ModuleLine" : 249,
+      "ModuleName" : "PID_Core"
+     }
+    ]
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+    "InstLine" : 139,
+    "InstName" : "telemetry",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/telemetry_tx.v",
+    "ModuleLine" : 4,
+    "ModuleName" : "telemetry_tx"
+   }
+  ]
+ }
+]

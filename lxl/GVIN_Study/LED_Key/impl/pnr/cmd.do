@@ -1,0 +1,17 @@
+-d D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\LED_Key\impl\gwsynthesis\LED_Key.vg
+-p GW2A-55C-PBGA484-8
+-pn GW2A-LV55PG484C8/I7
+-cst D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\LED_Key\src\LED_Key.cst
+-cfg D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\LED_Key\impl\pnr\device.cfg
+-bit
+-tr
+-ph
+-timing
+-cst_error
+-convert_sdp32_36_to_sdp16_18
+-place_option 0
+-route_option 0
+-clock_route_order 0
+-correct_hold 1
+-route_maxfan 23
+-global_freq 100.000

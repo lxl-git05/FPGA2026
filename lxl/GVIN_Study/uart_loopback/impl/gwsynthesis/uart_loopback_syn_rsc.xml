@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module name="top" Register="325" Alu="14" Lut="642" Ssram="48" T_Register="467(325)" T_Alu="14(14)" T_Lut="840(642)" T_Ssram="48(48)">
+ <SubModule name="gen_keys[0].key_inst" Register="28" Lut="39" T_Register="28(28)" T_Lut="39(39)"/>
+ <SubModule name="gen_keys[1].key_inst" Register="28" Lut="39" T_Register="28(28)" T_Lut="39(39)"/>
+ <SubModule name="gen_keys[2].key_inst" Register="28" Lut="39" T_Register="28(28)" T_Lut="39(39)"/>
+ <SubModule name="uart_byte_rx_inst" Register="34" Lut="45" T_Register="34(34)" T_Lut="45(45)"/>
+ <SubModule name="uart_byte_tx_inst" Register="24" Lut="36" T_Register="24(24)" T_Lut="36(36)"/>
+</Module>

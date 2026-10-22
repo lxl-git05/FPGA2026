@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-20",
+  "purpose": "重构前只读源码快照指纹，未复制外部源码",
+  "files": [
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/adc128s102.v",
+      "lines": 84,
+      "sha256": "029446f9cd9ef3774382ea1d16fde6faf5d8ffe2230e1f65340f63b748a8a915"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v",
+      "lines": 223,
+      "sha256": "7d42e9d408f77cc9012ba0373acbf79b23e6f1a249abf39c785f2ff987eb1408"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/Key.v",
+      "lines": 235,
+      "sha256": "08c2b02a25b95e16786d21d9af6108f8937a1cd8b8718a6077e905f1c3ae7eb2"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/MyPID.v",
+      "lines": 859,
+      "sha256": "8f9058250d3d8a12d0600bb052291c2ef326fbc84a76383701d299ec54bf6112"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/parameter_manager.v",
+      "lines": 313,
+      "sha256": "bfe85bcf948feeae50dfa4748f02770fa64ce38c054bdcde48a2bf01b82035cf"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/protocol_rx.v",
+      "lines": 870,
+      "sha256": "9d98e7611f70b4b829a3ec423c2f5f04f2205212d586650c77f7d7acff4f2f63"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/protocol_tx.v",
+      "lines": 1102,
+      "sha256": "ec81f322b3e55a55f02d8ca43c56f0748db5b0da7e0bfd4d85794580d8c9456a"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/PWM.v",
+      "lines": 170,
+      "sha256": "05a89b236d41fc49f8622a3d6c47ab38b6101d915fb7ebf43118ea2109c8820b"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/Seg8.v",
+      "lines": 248,
+      "sha256": "c780875bbb833656455d891c0d06bcfe91959409280ca21ecc03abec790da3f1"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+      "lines": 262,
+      "sha256": "1e211044d156dd54b4163671c2507a9833619f0368a01cf57417b9c069b7d062"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/telemetry_param_mux.v",
+      "lines": 43,
+      "sha256": "9934840130424d40d2b7c2540a28684a7958d1fd0b5f5aeb9c61af7dad6928de"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/Test.v",
+      "lines": 432,
+      "sha256": "47aab08eb39533dc8ad01efc9ec801ee656cc33d0599cd6cbf497b8de85213ce"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/uart_byte_rx.v",
+      "lines": 417,
+      "sha256": "bc8660ab2878e5bf213adda88275f3eff9cf5c5f0a10dc529ded6a02dc20df21"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/uart_byte_tx.v",
+      "lines": 333,
+      "sha256": "f57e1bbf2476f73e0b671d8c8c698047ef054c02ac3fc063be775813c916a772"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/uart_data_rx.v",
+      "lines": 182,
+      "sha256": "87f7d39474902d8a031f5a79195f8bdb8844e721614a88188b0db9f9e99a6753"
+    },
+    {
+      "path": "DLB/DLB/DLB.srcs/sources_1/new/uart_data_tx.v",
+      "lines": 162,
+      "sha256": "5e0c0628c73410b4d64beed14e7696eb2b7954bedd51e0cffea0c823059982bb"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/adc.v",
+      "lines": 79,
+      "sha256": "e79c21fdfcf1c558643569baec3939e25848b085d65075bc9f390caaa1afd21b"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/encoder.v",
+      "lines": 66,
+      "sha256": "f1e9530f091c7664180618b4e54a80d8a759234213c7f94ac3aa9b961c8cfe81"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/key_filter.v",
+      "lines": 44,
+      "sha256": "033105de13784a3c269b0d20307a485e5811d1932a0865692da6de0f479d11c2"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/motor_ctrl.v",
+      "lines": 53,
+      "sha256": "2b621a78d4c508335645620ca4f6a7130244fb77c16ef5a88e6f2f6d5bfa3a6c"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/top.v",
+      "lines": 206,
+      "sha256": "51c86bef434abaeced2ef81b017d4f197b19e180bf44194a0708241c6737932c"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/uart.v",
+      "lines": 233,
+      "sha256": "59c48103492f4f307cdd39e28c59e1270bb8a40c038c3da93a3dc758c2f02f75"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/uart_rx.v",
+      "lines": 131,
+      "sha256": "6d54c95b2d7185848263498d17f67719a4209c4d5357b8463c7105402b25cb99"
+    },
+    {
+      "path": "lxl/GVIN/Interface_test_new/src/uart_tx.v",
+      "lines": 99,
+      "sha256": "6a24a8adcebd6b901b0cd2939640de0ac48ed6af68b7795fc71143532f40c471"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\adc128s102.v",
+      "lines": 72,
+      "sha256": "9ce24ec962636c9b99e1cdb9fcc9aa6af3f233043e2088364eec08da1b5e6521"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\DLB.cst",
+      "lines": 171,
+      "sha256": "0a084e58dc795d597e4c078c9122e2df6a5b515cf6c1692e87610229dad69bf1"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\adc\\adc.srcs\\sim_1\\new\\tb.v",
+      "lines": 119,
+      "sha256": "42a87481caef46dea5fd3fdf7826921d7067c010010216f00ef2e2298827e711"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\adc\\adc.srcs\\sources_1\\new\\adc.v",
+      "lines": 126,
+      "sha256": "03bbe00be380e9ce10d15801d7e397b5b96ccf82fcfbba3a2fc0a9846a7bed05"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\led_key\\led_key.srcs\\sim_1\\new\\tb_led_key.v",
+      "lines": 50,
+      "sha256": "0aa8121fafd5759039e8a26074dadc6f5e18e0a22690eed0ccea68086de62cf1"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\led_key\\led_key.srcs\\sources_1\\new\\led_key.v",
+      "lines": 31,
+      "sha256": "a648a109f9aa3420c369dcfd62bc10c787e12e7fa8e495b1e1498957df2fd5a3"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\timer\\timer.srcs\\sim_1\\new\\tb.v",
+      "lines": 53,
+      "sha256": "0854897a4c8c460287bdf4ec9eff4bcfbc52b1bdf0a5416984c9254b2da01385"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\timer\\timer.srcs\\sources_1\\new\\timer.v",
+      "lines": 46,
+      "sha256": "82b7b97e9794674f73c55d2fd875569a658f499f6bec16cabeb477bd66322c26"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\uart_rx\\uart_rx.srcs\\sources_1\\new\\uart_rx.v",
+      "lines": 119,
+      "sha256": "4834402042a0a985eda5f539d93675e5c2314247e6ff1ca80b800e644a6c92e9"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\uart_tx\\uart_tx.srcs\\sim_1\\new\\tb.v",
+      "lines": 59,
+      "sha256": "60d0c378df6e3e6be5ba781551feb9ee2c37b70577c5d68b9320f4c799b0c4ae"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\uart_tx\\uart_tx.srcs\\sources_1\\new\\uart_tx.v",
+      "lines": 128,
+      "sha256": "313949c39adb006da51e0399f54662a6f87341c6100506d2fefd132dde982573"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\fpga_gowin\\uart_tx1\\uart_tx1.srcs\\sources_1\\new\\uart_tx1.v",
+      "lines": 110,
+      "sha256": "c58e5add07ca2abc0e12c52bd7c52a9f4c8731b3c3a28a9876105a393fbfb9a5"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\led_key\\led_key.sim\\sim_1\\behav\\xsim\\glbl.v",
+      "lines": 84,
+      "sha256": "ca9651d24ebe82b113862ac5c54f74572b383d9f42df59cb8d29e339851edf8a"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\led_key\\led_key.srcs\\sim_1\\new\\tb_led_key.v",
+      "lines": 50,
+      "sha256": "0aa8121fafd5759039e8a26074dadc6f5e18e0a22690eed0ccea68086de62cf1"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\led_key\\led_key.srcs\\sources_1\\new\\led_key.v",
+      "lines": 31,
+      "sha256": "a648a109f9aa3420c369dcfd62bc10c787e12e7fa8e495b1e1498957df2fd5a3"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\Test.v",
+      "lines": 433,
+      "sha256": "86e67c6db0bc970a09ff4160646acf32883342bd1b56bc14b093428a6f9ec5e1"
+    },
+    {
+      "path": "C:\\Users\\MR\\Desktop\\Temp\\FPGA2026\\zlx\\引脚约束说明.md",
+      "lines": 89,
+      "sha256": "878915e18a6146714eaa18ae37f9b5504a866873165d6c22204d303c9e237225"
+    }
+  ]
+}

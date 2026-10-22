@@ -1,0 +1,54 @@
+[
+ {
+  "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+  "InstLine" : 15,
+  "InstName" : "top",
+  "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+  "ModuleLine" : 15,
+  "ModuleName" : "top",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+    "InstLine" : 86,
+    "InstName" : "motor_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+    "ModuleLine" : 38,
+    "ModuleName" : "TB6612_Motor_driver",
+    "SubInsts" : [
+     {
+      "InstFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+      "InstLine" : 134,
+      "InstName" : "u_pwm_gen",
+      "ModuleFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/PWM.v",
+      "ModuleLine" : 48,
+      "ModuleName" : "pwm_gen"
+     }
+    ]
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+    "InstLine" : 98,
+    "InstName" : "encoder_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v",
+    "ModuleLine" : 36,
+    "ModuleName" : "encoder_quad"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+    "InstLine" : 108,
+    "InstName" : "uart_byte_rx_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+    "ModuleLine" : 36,
+    "ModuleName" : "uart_byte_rx"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+    "InstLine" : 118,
+    "InstName" : "uart_byte_tx_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+    "ModuleLine" : 31,
+    "ModuleName" : "uart_byte_tx"
+   }
+  ]
+ }
+]

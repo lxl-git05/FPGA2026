@@ -1,0 +1,37 @@
+{
+ "Device" : "GW2A-55C",
+ "Files" : [
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/src/top.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/PWM.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+   "Type" : "verilog"
+  }
+ ],
+ "IncludePath" : [
+
+ ],
+ "LoopLimit" : 2000,
+ "ResultFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/tb6612_encoder/impl/temp/rtl_parser.result",
+ "Top" : "",
+ "VerilogStd" : "verilog_2001",
+ "VhdlStd" : "vhdl_93"
+}

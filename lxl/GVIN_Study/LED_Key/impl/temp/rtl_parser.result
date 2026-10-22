@@ -1,0 +1,44 @@
+[
+ {
+  "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/top.v",
+  "InstLine" : 4,
+  "InstName" : "top",
+  "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/top.v",
+  "ModuleLine" : 4,
+  "ModuleName" : "top",
+  "SubInsts" : [
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/top.v",
+    "InstLine" : 16,
+    "InstName" : "gen_keys[0].key_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/Key.v",
+    "ModuleLine" : 19,
+    "ModuleName" : "key"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/top.v",
+    "InstLine" : 16,
+    "InstName" : "gen_keys[1].key_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/Key.v",
+    "ModuleLine" : 19,
+    "ModuleName" : "key"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/top.v",
+    "InstLine" : 16,
+    "InstName" : "gen_keys[2].key_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/Key.v",
+    "ModuleLine" : 19,
+    "ModuleName" : "key"
+   },
+   {
+    "InstFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/top.v",
+    "InstLine" : 29,
+    "InstName" : "LED_inst",
+    "ModuleFile" : "D:/github/FPGA2026/FPGA2026/lxl/GVIN_Study/LED_Key/src/LED.v",
+    "ModuleLine" : 3,
+    "ModuleName" : "LED"
+   }
+  ]
+ }
+]
