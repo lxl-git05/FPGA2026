@@ -1,15 +1,14 @@
--d D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\impl\gwsynthesis\DLB.vg
+-d D:\FPGA2026\lxl\GVIN_Study\DLB\impl\gwsynthesis\DLB.vg
 -p GW2A-55C-PBGA484-8
 -pn GW2A-LV55PG484C8/I7
--cst D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.cst
--cfg D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\impl\pnr\device.cfg
--sdc D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.sdc
+-cst D:\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.cst
+-cfg D:\FPGA2026\lxl\GVIN_Study\DLB\impl\pnr\device.cfg
+-sdc D:\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.sdc
 -bit
 -tr
 -ph
 -timing
 -cst_error
--convert_sdp32_36_to_sdp16_18
 -place_option 0
 -route_option 0
 -clock_route_order 0

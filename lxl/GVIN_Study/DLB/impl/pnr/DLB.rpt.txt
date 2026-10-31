@@ -1,38 +1,38 @@
-//Copyright (C)2014-2025 Gowin Semiconductor Corporation.
+//Copyright (C)2014-2026 Gowin Semiconductor Corporation.
 //All rights reserved.
 
 
 1. PnR Messages
 
   <Report Title>: PnR Report
-  <Design File>: D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\impl\gwsynthesis\DLB.vg
-  <Physical Constraints File>: D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.cst
-  <Timing Constraints File>: D:\github\FPGA2026\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.sdc
-  <Tool Version>: V1.9.12 (64-bit)
+  <Design File>: D:\FPGA2026\lxl\GVIN_Study\DLB\impl\gwsynthesis\DLB.vg
+  <Physical Constraints File>: D:\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.cst
+  <Timing Constraints File>: D:\FPGA2026\lxl\GVIN_Study\DLB\src\DLB.sdc
+  <Tool Version>: V1.9.12.03 (64-bit)
   <Part Number>: GW2A-LV55PG484C8/I7
   <Device>: GW2A-55
   <Device Version>: C
-  <Created Time>:Wed Oct 21 17:48:14 2026
+  <Created Time>:Wed Oct 28 22:03:32 2026
 
 
 2. PnR Details
 
   Running placement:
     Placement Phase 0: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s
-    Placement Phase 1: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s
-    Placement Phase 2: CPU time = 0h 0m 7s, Elapsed time = 0h 0m 7s
-    Placement Phase 3: CPU time = 0h 0m 9s, Elapsed time = 0h 0m 9s
-    Total Placement: CPU time = 0h 0m 19s, Elapsed time = 0h 0m 19s
+    Placement Phase 1: CPU time = 0h 0m 0.869s, Elapsed time = 0h 0m 0.869s
+    Placement Phase 2: CPU time = 0h 0m 5s, Elapsed time = 0h 0m 5s
+    Placement Phase 3: CPU time = 0h 0m 11s, Elapsed time = 0h 0m 11s
+    Total Placement: CPU time = 0h 0m 18s, Elapsed time = 0h 0m 18s
  Running routing:
-    Routing Phase 0: CPU time = 0h 0m 0.003s, Elapsed time = 0h 0m 0.004s
-    Routing Phase 1: CPU time = 0h 0m 0.355s, Elapsed time = 0h 0m 0.355s
-    Routing Phase 2: CPU time = 0h 0m 5s, Elapsed time = 0h 0m 5s
+    Routing Phase 0: CPU time = 0h 0m 0.009s, Elapsed time = 0h 0m 0.01s
+    Routing Phase 1: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s
+    Routing Phase 2: CPU time = 0h 0m 15s, Elapsed time = 0h 0m 15s
     Routing Phase 3: CPU time = 0h 0m 0s, Elapsed time = 0h 0m 0s
-    Total Routing: CPU time = 0h 0m 6s, Elapsed time = 0h 0m 6s
+    Total Routing: CPU time = 0h 0m 16s, Elapsed time = 0h 0m 16s
  Generate output files:
-    CPU time = 0h 0m 4s, Elapsed time = 0h 0m 4s
+    CPU time = 0h 0m 11s, Elapsed time = 0h 0m 11s
 
- Total Time and Memory Usage: CPU time = 0h 0m 28s, Elapsed time = 0h 0m 28s, Peak memory usage = 1112MB
+ Total Time and Memory Usage: CPU time = 0h 0m 45s, Elapsed time = 0h 0m 45s, Peak memory usage = 1190MB
 
 
 3. Resource Usage Summary
@@ -40,15 +40,15 @@
   --------------------------------------------------------------------------------
   Resources                   | Usage                               | Utilization
   --------------------------------------------------------------------------------
-  Logic                       | 6163/54720                          |  12%
-    --LUT,ALU,ROM16           | 6163(4498 LUT, 1665 ALU, 0 ROM16)   | -
+  Logic                       | 6282/54720                          |  12%
+    --LUT,ALU,ROM16           | 6282(4583 LUT, 1699 ALU, 0 ROM16)   | -
     --SSRAM(RAM16)            | 0                                   | -
-  Register                    | 4960/42000                          |  12%
+  Register                    | 5021/42000                          |  12%
     --Logic Register as Latch | 0/41040                             |  0%
-    --Logic Register as FF    | 4944/41040                          |  13%
+    --Logic Register as FF    | 5005/41040                          |  13%
     --I/O Register as Latch   | 0/960                               |  0%
     --I/O Register as FF      | 16/960                              |  2%
-  CLS                         | 4460/27360                          |  17%
+  CLS                         | 4541/27360                          |  17%
   I/O Port                    | 26/320                              |  9%
   I/O Buf                     | 26                                  | -
     --Input Buf               | 17                                  | -
@@ -95,16 +95,16 @@
   Signal         | Global Clock   | Location
   -------------------------------------------
   clk_d          | PRIMARY        |  TR TL BR BL
-  controller/applied_b_31_6| PRIMARY        |  TR BR
-  controller/pid_a/out_min_work_0_5| PRIMARY        |  TR TL BR BL
-  n155_6         | LW             |  -
-  commands/n4740_5| LW             |  -
+  controller/a_goal_31_5| PRIMARY        |  BR BL
+  controller/pid_a/out_min_work_0_5| PRIMARY        |  TL BR BL
+  n373_6         | LW             |  -
+  commands/n8739_4| LW             |  -
   commands/multiply_acc_127_10| LW             |  -
-  commands/n8739_7| LW             |  -
   configuration/convert_micro_63_9| LW             |  -
   configuration/converter/dividend_127_6| LW             |  -
   configuration/converter/acc_127_7| LW             |  -
   controller/n3607_6| LW             |  -
+  controller/applied_b_31_6| LW             |  -
   ===========================================
 
 

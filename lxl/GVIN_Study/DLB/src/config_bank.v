@@ -82,12 +82,12 @@ module config_bank #(parameter integer COUNTS_PER_REV=1040)(input wire clk,rst_n
             auto_start <= 1'd1; // 0=手动扶摆、1=自动脉冲起摆，与单双环无关，均需按K1启动。
             period_a_ms <= 16'd5; // 内环周期ms，修改默认值时还需同步init_q函数中的内环周期5。
             period_b_ms <= 16'd50; // 外环周期ms，修改默认值时还需同步init_q函数中的外环周期50。
-            capture_adc <= 12'd500; // 捕获区半宽ADC码，应不大于fall_adc且不小于outer_limit_adc。
-            fall_adc <= 12'd700; // 稳摆保护半宽ADC码，直立基准±此值须位于两端死区阈值之间。
-            kick_percent <= 8'd35; // 自动起摆力度%，范围1~100，手动模式不使用。
-            kick_ms <= 16'd100; // 自动起摆每个方向的脉冲时长ms，手动模式不使用。
+            capture_adc <= 12'd600; // 捕获区半宽ADC码，应不大于fall_adc且不小于outer_limit_adc。
+            fall_adc <= 12'd800; // 稳摆保护半宽ADC码，直立基准±此值须位于两端死区阈值之间。
+            kick_percent <= 8'd45; // 自动起摆力度%，范围1~100，手动模式不使用。
+            kick_ms <= 16'd150; // 自动起摆每个方向的脉冲时长ms，手动模式不使用。
             judge_ms <= 16'd40; // 峰值与捕获判断间隔ms，连续两次满足捕获条件才进入稳摆。
-            swing_timeout_ms <= 16'd10000; // 自动起摆总超时ms，超时停机，手动等待不计此超时。
+            swing_timeout_ms <= 16'd20000; // 自动起摆总超时ms，超时停机，手动等待不计此超时。
             adc_timeout_ms <= 16'd3; // ADC原始采样失鲜超时ms，与正常经过端点死区不同。
             rail_low <= 12'd64; // ADC不大于此值视为低端死区，无效角度不参与捕获或稳摆。
             rail_high <= 12'd4032; // ADC不小于此值视为高端死区，实际10位扩展原始最大值4092。
@@ -100,10 +100,10 @@ module config_bank #(parameter integer COUNTS_PER_REV=1040)(input wire clk,rst_n
             gain_micro[0] <= 64'sd380000; kp_a <= init_q(64'd380000, 0); // 内环Kp=0.380000。
             gain_micro[1] <= 64'sd0; ki_a <= init_q(64'd0, 1); // 内环Ki=0。
             gain_micro[2] <= 64'sd12000; kd_a <= init_q(64'd12000, 2); // 内环Kd=0.012000。
-            gain_micro[3] <= default_b_micro(64'd0); kp_b <= init_q(default_b_micro(64'd0), 3); // 外环Kp=0。
-            gain_micro[4] <= default_b_micro(64'd0); ki_b <= init_q(default_b_micro(64'd0), 4); // 外环Ki=0。
-            gain_micro[5] <= default_b_micro(64'd0); kd_b <= init_q(default_b_micro(64'd0), 5); // 外环Kd=0。
-            center_adc<=2180; goal_position<=0; epoch_a<=0; epoch_b<=0; // 前两项为直立ADC基准和电机目标计数，epoch为内部版本号勿改。
+            gain_micro[3] <= default_b_micro(64'd500000); kp_b <= init_q(default_b_micro(64'd500000), 3); // 外环Kp=0。
+            gain_micro[4] <= default_b_micro(64'd3000); ki_b <= init_q(default_b_micro(64'd3000), 4); // 外环Ki=0。
+            gain_micro[5] <= default_b_micro(64'd230000); kd_b <= init_q(default_b_micro(64'd230000), 5); // 外环Kd=0。
+            center_adc<=2240; goal_position<=0; epoch_a<=0; epoch_b<=0; // 前两项为直立ADC基准和电机目标计数，epoch为内部版本号勿改。
             state<=0; pending_id<=0; pending_micro<=0; convert_micro<=0;
             numerator<=1; denominator<=1; convert_start<=0;
             batch<=0; batch_loop<=0; batch_index<=0; candidate_period<=1;

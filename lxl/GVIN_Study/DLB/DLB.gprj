@@ -5,6 +5,10 @@
     <Version>5</Version>
     <Device name="GW2A-55C" pn="GW2A-LV55PG484C8/I7">gw2a55c-005</Device>
     <FileList>
+        <File path="D:/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/PWM.v" type="file.verilog" enable="1"/>
+        <File path="D:/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v" type="file.verilog" enable="1"/>
+        <File path="D:/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v" type="file.verilog" enable="1"/>
+        <File path="src/MyPID.v" type="file.verilog" enable="1"/>
         <File path="src/Top.v" type="file.verilog" enable="1"/>
         <File path="src/adc_frontend.v" type="file.verilog" enable="1"/>
         <File path="src/board_io.v" type="file.verilog" enable="1"/>
@@ -12,17 +16,13 @@
         <File path="src/command_rx.v" type="file.verilog" enable="1"/>
         <File path="src/config_bank.v" type="file.verilog" enable="1"/>
         <File path="src/gain_convert.v" type="file.verilog" enable="1"/>
-        <File path="src/MyPID.v" type="file.verilog" enable="1"/>
         <File path="src/run_control.v" type="file.verilog" enable="1"/>
         <File path="src/safety_guard.v" type="file.verilog" enable="1"/>
         <File path="src/swing_up.v" type="file.verilog" enable="1"/>
         <File path="src/telemetry_tx.v" type="file.verilog" enable="1"/>
-        <File path="../PID_Motor/src/Key.v" type="file.verilog" enable="1"/>
-        <File path="../uart_loopback/src/uart_byte_rx.v" type="file.verilog" enable="1"/>
-        <File path="../uart_loopback/src/uart_byte_tx.v" type="file.verilog" enable="1"/>
-        <File path="../../../DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v" type="file.verilog" enable="1"/>
-        <File path="../../../DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v" type="file.verilog" enable="1"/>
-        <File path="../../../DLB/DLB/DLB.srcs/sources_1/new/PWM.v" type="file.verilog" enable="1"/>
+        <File path="D:/FPGA2026/lxl/GVIN_Study/PID_Motor/src/Key.v" type="file.verilog" enable="1"/>
+        <File path="D:/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v" type="file.verilog" enable="1"/>
+        <File path="D:/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v" type="file.verilog" enable="1"/>
         <File path="src/DLB.cst" type="file.cst" enable="1"/>
         <File path="src/DLB.sdc" type="file.sdc" enable="1"/>
     </FileList>
