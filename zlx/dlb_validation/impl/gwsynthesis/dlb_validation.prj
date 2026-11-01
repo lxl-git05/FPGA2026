@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gowin-synthesis-project>
+<Project>
+    <Version>beta</Version>
+    <Device id="GW2A-55C" package="PBGA484" speed="8" partNumber="GW2A-LV55PG484C8/I7"/>
+    <FileList>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\Key.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\MyPID.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\PWM.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\Top.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\adc_frontend.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\board_io.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\cascade_control.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\command_rx.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\config_bank.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\encoder_quad.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\gain_convert.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\run_control.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\safety_guard.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\swing_up.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\tb6612_motor_driver.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\telemetry_tx.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\uart_byte_rx.v" type="verilog"/>
+        <File path="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\uart_byte_tx.v" type="verilog"/>
+    </FileList>
+    <OptionList>
+        <Option type="disable_insert_pad" value="0"/>
+        <Option type="dsp_style" value="auto"/>
+        <Option type="global_freq" value="100.000"/>
+        <Option type="looplimit" value="2000"/>
+        <Option type="map_option" value="1"/>
+        <Option type="max_fanout" value="1000"/>
+        <Option type="netlist_hierarchy" value="1"/>
+        <Option type="opt_goal" value="auto"/>
+        <Option type="output_file" value="D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\impl\gwsynthesis\dlb_validation.vg"/>
+        <Option type="print_all_synthesis_warning" value="0"/>
+        <Option type="ram_rw_check" value="0"/>
+        <Option type="ram_style" value="auto"/>
+        <Option type="rom_style" value="auto"/>
+        <Option type="shift_reg" value="auto"/>
+        <Option type="top_module" value="Top"/>
+        <Option type="vcc" value="1.0"/>
+        <Option type="verilog_language" value="verilog-2001"/>
+        <Option type="vhdl_language" value="vhdl-1993"/>
+    </OptionList>
+</Project>

@@ -1,7 +1,11 @@
 `timescale 1ns / 1ps
 // The swing-up region and the balance region deliberately have different permissions.
 // fault_now is independent of PID completion; final motor gate consumes it directly.
-module safety_guard #(parameter integer ADC_RANGE_ONLY=0)(input wire clk,rst_n,ms_tick,active,balancing,
+// Overspeed: 100ms window on position_count, limit MAX_SPEED_COUNTS_PER_S (fault 6).
+// Debounce: two consecutive overspeed windows (200ms) required before faulting.
+module safety_guard #(parameter integer ADC_RANGE_ONLY=0,
+                      parameter integer MAX_SPEED_COUNTS_PER_S=3120)(input wire clk,rst_n,ms_tick,active,balancing,
+    input wire returning,
     input wire raw_valid,raw_otr,angle_valid,balance_sample_valid,
     input wire [11:0] balance_angle_adc,
     input wire [11:0] raw_adc,angle_adc,rail_low,rail_high,capture_adc,fall_adc,
@@ -28,11 +32,50 @@ module safety_guard #(parameter integer ADC_RANGE_ONLY=0)(input wire clk,rst_n,m
     // Range protection uses each inner-loop feedback snapshot, not isolated raw samples.
     assign balance_safe=sensor_ok&&(ADC_RANGE_ONLY||(angle_valid&&raw_in_range))&&(!balance_sample_valid||(balance_abs<=fall_adc));
     assign fault_reason=!sensor_ok?(otr_fault?4'd2:4'd1):
-                        !position_safe?4'd3:(balancing&&!balance_safe)?4'd4:4'd0;
+                        !position_safe?4'd3:
+                        (balancing&&speed_fault&&overspeed_enabled)?4'd6:
+                        (balancing&&!balance_safe)?4'd4:4'd0;
     assign fault_now=active&&(fault_reason!=0);
+    // Overspeed (fault 6) is suppressed: for the first 3s after entering balance (swing-up
+    // momentum) AND during the whole auto-return flow (returning), so the return speed is
+    // not misjudged as loss of control. The fallen protection (fault 4) stays active always.
+    reg balancing_prev;
+    reg [11:0] balance_age;
+    wire overspeed_enabled=(balance_age>=3000)&&!returning;
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin balancing_prev<=0; balance_age<=0; end
+        else begin
+            balancing_prev<=balancing;
+            if(!balancing) balance_age<=0;
+            else if(ms_tick && balance_age!=12'hfff) balance_age<=balance_age+1'b1;
+        end
+    end
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin seen<=0; age_ms<=0; end
         else if(raw_valid) begin seen<=1; age_ms<=0; end
         else if(ms_tick && age_ms!=16'hffff) age_ms<=age_ms+1'b1;
+    end
+    // ---- overspeed detection: sliding 100ms window on position_count ----
+    // Limit: MAX_SPEED_COUNTS_PER_S counts/s (default 3120 = three revolutions).
+    // Two consecutive overspeed windows are required before speed_fault asserts.
+    localparam integer SPEED_WINDOW_MS=100;
+    localparam integer SPEED_THRESHOLD=MAX_SPEED_COUNTS_PER_S*SPEED_WINDOW_MS/1000;
+    reg [6:0] speed_cnt;
+    reg signed [32:0] pos_prev;
+    reg speed_fault;
+    reg overspeed_cnt;
+    wire signed [33:0] speed_delta={position_ext[32],position_ext}-{pos_prev[32],pos_prev};
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin speed_cnt<=0; pos_prev<=0; speed_fault<=0; overspeed_cnt<=0; end
+        else if(ms_tick) begin
+            if(speed_cnt==SPEED_WINDOW_MS-1) begin
+                speed_cnt<=0;
+                if((speed_delta>SPEED_THRESHOLD)||(speed_delta< -SPEED_THRESHOLD))
+                    overspeed_cnt<=(overspeed_cnt==1)?overspeed_cnt:overspeed_cnt+1'b1;
+                else overspeed_cnt<=0;
+                speed_fault<=(overspeed_cnt>=1);
+                pos_prev<=position_ext;
+            end else speed_cnt<=speed_cnt+1'b1;
+        end
     end
 endmodule

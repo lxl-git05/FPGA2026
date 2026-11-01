@@ -1,29 +1,19 @@
 `timescale 1ns / 1ps
-// J280/GW2A-55C 模块化倒立摆；50MHz，SW5 复位，K1 启动/停止。
-// 上电后为 STOPPED；config_bank 默认双环 + 自动摆起。直立 ADC 实测为 2180；
-// config_bank 的 center_adc 默认值为 2240，请通过 @goal_A 将其设为实测值。
-// 模块：board_io、command_rx/config_bank、safety_guard、swing_up、run_control、
-// cascade_control（两个流水线 PID_Core）、telemetry_tx。无 Protocol V1 或持久化。
-// A：ADC 目标/实际、PWM 百分比设定；B：编码器计数目标/实际、ADC 偏移设定。
-// 接收 @Kp_A/Ki_A/Kd_A/goal_A 及 B 组对应变体，格式为十进制$#。发送六个 %.6f 字段 + CRLF，50Hz。
-// 内环/外环默认 5/50ms；1040 计数/转；顺时针电机/编码器为正。
-// 观察到正反馈后，内环 PWM 极性已反转；方向约定不变。
-// 外环修正方向：内环目标 = 直立 ADC + 外环 PID 输出。
-// 平衡范围使用每个 5ms 内环 ADC 快照；调试时绕过 OTR/窗口/过期检查。
-// XH1 使用 B 桥。故障门控覆盖所有 PWM 产生者；仅失衡恢复是自动的。
-// 失衡自动重启：进入 BALANCE 后，若角度超出 fall_adc 或位置移动速度大于 FALL_SPEED_CPS，
-// 则执行软复位，然后等待角度进入回中区 RESTART_CENTER_ADC±RESTART_ADC
-// （默认 0±100，12位角度在 0/4096 处回绕），并自动重新进入 AUTO_SWING。
-// K1 始终优先；真实故障仍锁存 FAULT。
+// J280/GW2A-55C modular inverted pendulum; 50MHz, SW5 reset, K1 start/stop.
+// Power-on STOPPED; current defaults single-loop + manual capture. Upright ADC=2180 (measured 2026-10-21).
+// Modules: board_io, command_rx/config_bank, safety_guard, swing_up, run_control,
+// cascade_control(two pipelined PID_Core), telemetry_tx. No Protocol V1 or persistence.
+// A: ADC goal/real, PWM percent set; B: encoder-count goal/real, ADC-offset set.
+// RX @Kp_A/Ki_A/Kd_A/goal_A and B variants =decimal$#. TX six %.6f fields + CRLF, 50Hz.
+// Inner/outer defaults 5/50ms; 1040 counts/rev; clockwise motor/encoder positive.
+// Inner PWM polarity reversed after observed positive feedback; direction conventions unchanged.
+// Outer correction direction: inner goal = upright ADC + outer PID output.
+// Balance range uses each 5ms inner-loop ADC snapshot; OTR/window/stale checks bypassed in debug.
+// XH1 uses B bridge. Fault gate overrides every PWM producer; no automatic fault restart.
 module Top #(
     parameter integer MOTOR_DIR_REVERSE=1,ENCODER_DIR_REVERSE=1,
     parameter integer CASCADE_SIGN=1,ANGLE_OUTPUT_SIGN=-1,COUNTS_PER_REV=1040,
-    parameter integer ADC_RANGE_ONLY=1, // 1只保留PID采样值范围保护，改0恢复其他ADC判定。
-    parameter integer RESTART_ADC=100, // 落摆后回中区半宽，ADC码。
-    parameter integer RESTART_CENTER_ADC=0, // 回中区中心，ADC码；0=零点，窗口跨0/4096回绕。
-    parameter integer RESTART_CONFIRM_MS=500, // 回中连续确认时间，ms。
-    parameter integer FALL_SPEED_CPS=1040, // 位置变化速度上限，counts/s；1040=1圈/s。
-    parameter integer FALL_SPEED_WINDOW_MS=1000 // 测速窗口，ms。
+    parameter integer ADC_RANGE_ONLY=1 // 1只保留PID采样值范围保护，改0恢复其他ADC判定。
 )(input wire clk,rst_n,key_in,encoder_a,encoder_b,uart_rx,
     input wire [9:0] adc_data_in,input wire adc_otr,
     output wire uart_tx,adc_clk,adc_oe_n,tb_in1,tb_in2,tb_pwm,
@@ -52,15 +42,6 @@ module Top #(
     wire rx_done,tx_done,tx_send,write_valid,config_ready,key_press;
     wire signed [63:0] write_micro;
     wire signed [31:0] encoder_count,position_origin,position_count;
-// 累计计数转单圈计数，兼容反转产生的负数。
-wire signed [31:0] count_rem = position_count % 32'sd1040;
-wire [31:0] single_count =
-    count_rem[31] ? count_rem + 32'sd1040 : count_rem;
-
-// 角度×1000000，保留六位小数。
-wire [63:0] angle_micro =
-    ({32'd0, single_count} * 64'd360000000) / 64'd1040;
-
     wire signed [32:0] relative_position={encoder_count[31],encoder_count}-{position_origin[31],position_origin};
     assign position_count=(relative_position>33'sd2147483647)?32'sh7fffffff:
                           (relative_position< -33'sd2147483648)?32'sh80000000:relative_position[31:0];
@@ -71,9 +52,11 @@ wire [63:0] angle_micro =
     wire [3:0] fault_reason,fault_code;
     wire [2:0] state;
     wire active,balancing,swing_enable,motor_enable,capture_clear,capture_request,swing_timed_out;
+    wire auto_retry;
     wire signed [31:0] pid_pwm_ticks,swing_pwm_ticks,motor_pwm_ticks;
     wire signed [31:0] a_goal,a_real,a_set_ticks,b_goal,b_real,b_set_adc;
     wire a_done,b_done,telemetry_busy,a_sample_valid;
+    wire returning;
     wire [11:0] a_sample_adc;
     reg [15:0] ms_counter;
     wire ms_tick=(ms_counter==16'd49999);
@@ -132,6 +115,7 @@ wire [63:0] angle_micro =
         .balance_sample_valid(a_sample_valid),.balance_angle_adc(a_sample_adc),
         .rail_low(rail_low),.rail_high(rail_high),.capture_adc(capture_adc),.fall_adc(fall_adc),
         .center_adc(center_adc),.position_count(position_count),.travel_counts(travel_counts),.adc_timeout_ms(adc_timeout_ms),
+        .returning(returning),
         .sensor_ok(sensor_ok),.capture_allowed(capture_allowed),.balance_safe(balance_safe),
         .position_safe(position_safe),.fault_now(fault_now),.fault_reason(fault_reason));
     swing_up swing(.clk(clk),.rst_n(rst_n),.ms_tick(ms_tick),.enable(swing_enable),.auto_mode(auto_start),
@@ -139,18 +123,17 @@ wire [63:0] angle_micro =
         .center_adc(center_adc),.kick_percent(kick_percent),.kick_ms(kick_ms),.judge_ms(judge_ms),
         .swing_timeout_ms(swing_timeout_ms),.swing_pwm_ticks(swing_pwm_ticks),
         .capture_request(capture_request),.timed_out(swing_timed_out));
-    run_control #(.RESTART_ADC(RESTART_ADC),.RESTART_CENTER_ADC(RESTART_CENTER_ADC),
-        .RESTART_CONFIRM_MS(RESTART_CONFIRM_MS),
-        .FALL_SPEED_CPS(FALL_SPEED_CPS),.FALL_SPEED_WINDOW_MS(FALL_SPEED_WINDOW_MS)) run(
-        .clk(clk),.rst_n(rst_n),.ms_tick(ms_tick),.key_press(key_press),.sensor_ok(sensor_ok),.position_safe(position_safe),
+    run_control run(.clk(clk),.rst_n(rst_n),.key_press(key_press),.sensor_ok(sensor_ok),.position_safe(position_safe),
         .config_ready(config_ready),.auto_start(auto_start),.fault_now(fault_now),.fault_reason(fault_reason),
-        .capture_request(capture_request),.swing_timed_out(swing_timed_out),.encoder_count(encoder_count),
+        .capture_request(capture_request),.swing_timed_out(swing_timed_out),.angle_adc(angle_adc),
+        .ms_tick(ms_tick),
+        .encoder_count(encoder_count),
         .pid_pwm_ticks(pid_pwm_ticks),.swing_pwm_ticks(swing_pwm_ticks),.state(state),.fault_code(fault_code),
-        .position_origin(position_origin),.capture_clear(capture_clear),.active(active),.balancing(balancing),
-        .swing_enable(swing_enable),.motor_enable(motor_enable),.motor_pwm_ticks(motor_pwm_ticks),
-        .position_count(position_count),.angle_adc(angle_adc),.angle_valid(angle_valid));
-    cascade_control #(.CASCADE_SIGN(CASCADE_SIGN),.ANGLE_OUTPUT_SIGN(ANGLE_OUTPUT_SIGN)) controller(
+        .position_origin(position_origin),.capture_clear(capture_clear),.auto_retry(auto_retry),.active(active),.balancing(balancing),
+        .swing_enable(swing_enable),.motor_enable(motor_enable),.motor_pwm_ticks(motor_pwm_ticks));
+    cascade_control #(.CASCADE_SIGN(CASCADE_SIGN),.ANGLE_OUTPUT_SIGN(ANGLE_OUTPUT_SIGN),.REV_COUNTS(COUNTS_PER_REV)) controller(
         .clk(clk),.rst_n(rst_n),.ms_tick(ms_tick),.enable(balancing&&!fault_now&&!key_press),.capture_clear(capture_clear),
+        .auto_retry(auto_retry),
         .dual_loop(dual_loop),.period_a_ms(period_a_ms),.period_b_ms(period_b_ms),
         .outer_limit_adc(outer_limit_adc),.outer_i_adc(outer_i_adc),
         .inner_limit_percent(inner_limit_percent),.inner_i_percent(inner_i_percent),
@@ -158,6 +141,7 @@ wire [63:0] angle_micro =
         .kp_a(kp_a),.ki_a(ki_a),.kd_a(kd_a),.kp_b(kp_b),.ki_b(ki_b),.kd_b(kd_b),
         .epoch_a(epoch_a),.epoch_b(epoch_b),.pid_pwm_ticks(pid_pwm_ticks),
         .a_goal(a_goal),.a_real(a_real),.a_set_ticks(a_set_ticks),.b_goal(b_goal),.b_real(b_real),.b_set_adc(b_set_adc),
+        .returning(returning),
         .a_done(a_done),.b_done(b_done),.a_sample_valid(a_sample_valid),.a_sample_adc(a_sample_adc));
     telemetry_tx telemetry(.clk(clk),.rst_n(rst_n),.send_frame(send_frame),.tx_done(tx_done),
         .a_goal(a_goal),.a_real(a_real),.a_set_ticks(a_set_ticks),.b_goal(b_goal),.b_real(b_real),.b_set_adc(b_set_adc),

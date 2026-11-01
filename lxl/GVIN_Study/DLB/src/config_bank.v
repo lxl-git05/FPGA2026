@@ -82,19 +82,19 @@ module config_bank #(parameter integer COUNTS_PER_REV=1040)(input wire clk,rst_n
             auto_start <= 1'd1; // 0=手动扶摆、1=自动脉冲起摆，与单双环无关，均需按K1启动。
             period_a_ms <= 16'd5; // 内环周期ms，修改默认值时还需同步init_q函数中的内环周期5。
             period_b_ms <= 16'd50; // 外环周期ms，修改默认值时还需同步init_q函数中的外环周期50。
-            capture_adc <= 12'd600; // 捕获区半宽ADC码，应不大于fall_adc且不小于outer_limit_adc。
-            fall_adc <= 12'd800; // 稳摆保护半宽ADC码，直立基准±此值须位于两端死区阈值之间。
+            capture_adc <= 12'd500; // 捕获区半宽ADC码，应不大于fall_adc且不小于outer_limit_adc。
+            fall_adc <= 12'd700; // 稳摆保护半宽ADC码，直立基准±此值须位于两端死区阈值之间。
             kick_percent <= 8'd45; // 自动起摆力度%，范围1~100，手动模式不使用。
             kick_ms <= 16'd150; // 自动起摆每个方向的脉冲时长ms，手动模式不使用。
             judge_ms <= 16'd40; // 峰值与捕获判断间隔ms，连续两次满足捕获条件才进入稳摆。
-            swing_timeout_ms <= 16'd20000; // 自动起摆总超时ms，超时停机，手动等待不计此超时。
+            swing_timeout_ms <= 16'd10000; // 自动起摆总超时ms，超时停机，手动等待不计此超时。
             adc_timeout_ms <= 16'd3; // ADC原始采样失鲜超时ms，与正常经过端点死区不同。
             rail_low <= 12'd64; // ADC不大于此值视为低端死区，无效角度不参与捕获或稳摆。
             rail_high <= 12'd4032; // ADC不小于此值视为高端死区，实际10位扩展原始最大值4092。
             outer_limit_adc <= 16'd100; // 外环目标修正限幅ADC码，单环自动忽略，无需随模式修改。
             inner_limit_percent <= 8'd100; // 内环输出限幅%，自动起摆力度由kick_percent单独设置。
             inner_i_percent <= 8'd100; // 内环积分项贡献限幅%，不是Ki系数。
-            outer_i_adc <= 16'd100; // 外环积分项贡献限幅ADC码，单环自动忽略。
+            outer_i_adc <= 16'd30; // 外环积分项贡献限幅ADC码，单环自动忽略。回位防积分饱和：100→30。
             travel_counts <= 10*COUNTS_PER_REV; // 相对启动原点的行程限幅计数，默认10圈，不跟随外环目标移动。
             // PID数值填实际值×1000000，修改时同步本行两处数值，Q系数自动换算。
             gain_micro[0] <= 64'sd380000; kp_a <= init_q(64'd380000, 0); // 内环Kp=0.380000。

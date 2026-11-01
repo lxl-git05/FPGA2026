@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Module name="Top" Register="21" Alu="33" Lut="64" T_Register="5021(21)" T_Alu="1639(33)" T_Lut="4596(64)" T_MULT9X9="2(0)" T_MULT36X36="6(0)" T_MULTALU36X18="3(0)">
- <SubModule name="io" T_Register="228(0)" T_Alu="74(0)" T_Lut="440(0)">
-  <SubModule name="k1" Register="28" Lut="37" T_Register="28(28)" T_Lut="37(37)"/>
-  <SubModule name="enc" Register="38" Lut="123" T_Register="38(38)" T_Lut="123(123)"/>
-  <SubModule name="ad" Register="78" Alu="43" Lut="109" T_Register="78(78)" T_Alu="43(43)" T_Lut="109(109)"/>
-  <SubModule name="rx" Register="34" Lut="42" T_Register="34(34)" T_Lut="42(42)"/>
+<Module name="Top" Register="21" Alu="33" Lut="110" T_Register="5798(21)" T_Alu="1893(33)" T_Lut="5376(110)" T_MULT9X9="2(0)" T_MULT36X36="6(0)" T_MULTALU36X18="3(0)">
+ <SubModule name="io" T_Register="227(0)" T_Alu="74(0)" T_Lut="448(0)">
+  <SubModule name="k1" Register="28" Lut="36" T_Register="28(28)" T_Lut="36(36)"/>
+  <SubModule name="enc" Register="38" Lut="115" T_Register="38(38)" T_Lut="115(115)"/>
+  <SubModule name="ad" Register="77" Alu="43" Lut="108" T_Register="77(77)" T_Alu="43(43)" T_Lut="108(108)"/>
+  <SubModule name="rx" Register="34" Lut="44" T_Register="34(34)" T_Lut="44(44)"/>
   <SubModule name="tx" Register="22" Lut="33" T_Register="22(22)" T_Lut="33(33)"/>
-  <SubModule name="motor" Lut="81" T_Register="28(0)" T_Alu="31(0)" T_Lut="96(81)">
-   <SubModule name="u_pwm_gen" Register="28" Alu="31" Lut="15" T_Register="28(28)" T_Alu="31(31)" T_Lut="15(15)"/>
+  <SubModule name="motor" Lut="94" T_Register="28(0)" T_Alu="31(0)" T_Lut="112(94)">
+   <SubModule name="u_pwm_gen" Register="28" Alu="31" Lut="18" T_Register="28(28)" T_Alu="31(31)" T_Lut="18(18)"/>
   </SubModule>
  </SubModule>
- <SubModule name="commands" Register="636" Alu="252" Lut="860" T_Register="636(636)" T_Alu="252(252)" T_Lut="860(860)"/>
- <SubModule name="configuration" Register="462" Lut="241" MULTALU36X18="3" T_Register="1157(462)" T_Alu="319(0)" T_Lut="1216(241)" T_MULTALU36X18="3(3)">
-  <SubModule name="converter" Register="695" Alu="319" Lut="975" T_Register="695(695)" T_Alu="319(319)" T_Lut="975(975)"/>
+ <SubModule name="commands" Register="636" Alu="251" Lut="869" T_Register="636(636)" T_Alu="251(251)" T_Lut="869(869)"/>
+ <SubModule name="configuration" Register="462" Lut="244" MULTALU36X18="3" T_Register="1157(462)" T_Alu="319(0)" T_Lut="1213(244)" T_MULTALU36X18="3(3)">
+  <SubModule name="converter" Register="695" Alu="319" Lut="969" T_Register="695(695)" T_Alu="319(319)" T_Lut="969(969)"/>
  </SubModule>
- <SubModule name="guard" Register="1" Alu="24" T_Register="1(1)" T_Alu="24(24)"/>
- <SubModule name="swing" Register="81" Alu="48" Lut="260" MULT9X9="1" T_Register="81(81)" T_Alu="48(48)" T_Lut="260(260)" T_MULT9X9="1(1)"/>
- <SubModule name="run" Register="96" Alu="33" Lut="128" T_Register="96(96)" T_Alu="33(33)" T_Lut="128(128)"/>
- <SubModule name="controller" Register="610" Alu="140" Lut="389" MULT9X9="1" T_Register="2165(610)" T_Alu="792(140)" T_Lut="822(389)" T_MULT9X9="1(1)" T_MULT36X36="6(0)">
-  <SubModule name="pid_a" Register="796" Alu="340" Lut="242" MULT36X36="3" T_Register="796(796)" T_Alu="340(340)" T_Lut="242(242)" T_MULT36X36="3(3)"/>
-  <SubModule name="pid_b" Register="759" Alu="312" Lut="191" MULT36X36="3" T_Register="759(759)" T_Alu="312(312)" T_Lut="191(191)" T_MULT36X36="3(3)"/>
+ <SubModule name="guard" Register="52" Alu="57" Lut="51" T_Register="52(52)" T_Alu="57(57)" T_Lut="51(51)"/>
+ <SubModule name="swing" Register="81" Alu="48" Lut="266" MULT9X9="1" T_Register="81(81)" T_Alu="48(48)" T_Lut="266(266)" T_MULT9X9="1(1)"/>
+ <SubModule name="run" Register="103" Alu="45" Lut="122" T_Register="103(103)" T_Alu="45(45)" T_Lut="122(122)"/>
+ <SubModule name="controller" Register="1334" Alu="346" Lut="1031" MULT9X9="1" T_Register="2885(1334)" T_Alu="1002(346)" T_Lut="1477(1031)" T_MULT9X9="1(1)" T_MULT36X36="6(0)">
+  <SubModule name="pid_a" Register="796" Alu="340" Lut="249" MULT36X36="3" T_Register="796(796)" T_Alu="340(340)" T_Lut="249(249)" T_MULT36X36="3(3)"/>
+  <SubModule name="pid_b" Register="755" Alu="316" Lut="197" MULT36X36="3" T_Register="755(755)" T_Alu="316(316)" T_Lut="197(197)" T_MULT36X36="3(3)"/>
  </SubModule>
- <SubModule name="telemetry" Register="636" Alu="64" Lut="806" T_Register="636(636)" T_Alu="64(64)" T_Lut="806(806)"/>
+ <SubModule name="telemetry" Register="636" Alu="64" Lut="820" T_Register="636(636)" T_Alu="64(64)" T_Lut="820(820)"/>
 </Module>

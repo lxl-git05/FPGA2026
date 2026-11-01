@@ -77,7 +77,7 @@
     "IncludePath": [
     ],
     "LoopLimit": 2000,
-    "ResultFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/impl/temp/rtl_parser.result",
+    "ResultFile": "D:/FPGA2026/zlx/Claude_Temp/DLB_refactor/gowin/dlb_validation/impl/temp/rtl_parser.result",
     "Top": "Top",
     "VerilogStd": "verilog_2001",
     "VhdlStd": "vhdl_93"

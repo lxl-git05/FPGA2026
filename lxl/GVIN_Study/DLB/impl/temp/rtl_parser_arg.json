@@ -2,26 +2,6 @@
     "Device": "GW2A-55C",
     "Files": [
         {
-            "Path": "D:/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/PWM.v",
-            "Type": "verilog"
-        },
-        {
-            "Path": "D:/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v",
-            "Type": "verilog"
-        },
-        {
-            "Path": "D:/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
-            "Type": "verilog"
-        },
-        {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
-            "Type": "verilog"
-        },
-        {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-            "Type": "verilog"
-        },
-        {
             "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/adc_frontend.v",
             "Type": "verilog"
         },
@@ -42,19 +22,15 @@
             "Type": "verilog"
         },
         {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/gain_convert.v",
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/uart_byte_tx.v",
             "Type": "verilog"
         },
         {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/run_control.v",
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/uart_byte_rx.v",
             "Type": "verilog"
         },
         {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/safety_guard.v",
-            "Type": "verilog"
-        },
-        {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/swing_up.v",
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
             "Type": "verilog"
         },
         {
@@ -62,15 +38,39 @@
             "Type": "verilog"
         },
         {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/PID_Motor/src/Key.v",
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/tb6612_motor_driver.v",
             "Type": "verilog"
         },
         {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/swing_up.v",
             "Type": "verilog"
         },
         {
-            "Path": "D:/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/safety_guard.v",
+            "Type": "verilog"
+        },
+        {
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/run_control.v",
+            "Type": "verilog"
+        },
+        {
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/PWM.v",
+            "Type": "verilog"
+        },
+        {
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
+            "Type": "verilog"
+        },
+        {
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Key.v",
+            "Type": "verilog"
+        },
+        {
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/gain_convert.v",
+            "Type": "verilog"
+        },
+        {
+            "Path": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/encoder_quad.v",
             "Type": "verilog"
         }
     ],
