@@ -1,9 +1,9 @@
--d D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\impl\gwsynthesis\dlb_validation.vg
+-d D:\FPGA2026\zlx\dlb_validation\impl\gwsynthesis\dlb_validation.vg
 -p GW2A-55C-PBGA484-8
 -pn GW2A-LV55PG484C8/I7
--cst D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\DLB.cst
--cfg D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\impl\pnr\device.cfg
--sdc D:\FPGA2026\FPGA2026\Claude_Temp\DLB_refactor\gowin\dlb_validation\src\DLB.sdc
+-cst D:\FPGA2026\zlx\dlb_validation\src\DLB.cst
+-cfg D:\FPGA2026\zlx\dlb_validation\impl\pnr\device.cfg
+-sdc D:\FPGA2026\zlx\dlb_validation\src\DLB.sdc
 -bit
 -tr
 -ph
@@ -11,7 +11,6 @@
 -cst_error
 -place_option 0
 -route_option 0
--retiming_resource none
 -clock_route_order 0
 -correct_hold 1
 -route_maxfan 23

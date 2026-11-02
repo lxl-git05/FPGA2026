@@ -13,8 +13,13 @@
 module Top #(
     parameter integer MOTOR_DIR_REVERSE=1,ENCODER_DIR_REVERSE=1,
     parameter integer CASCADE_SIGN=1,ANGLE_OUTPUT_SIGN=-1,COUNTS_PER_REV=1040,
-    parameter integer ADC_RANGE_ONLY=1 // 1只保留PID采样值范围保护，改0恢复其他ADC判定。
-)(input wire clk,rst_n,key_in,key2_in,encoder_a,encoder_b,uart_rx,
+    parameter integer ADC_RANGE_ONLY=1, // 1只保留PID采样值范围保护，改0恢复其他ADC判定。
+    parameter integer DIP_GOAL_ENABLE=1, // 1: 拨码开关变化单次触发；0: 关闭拨码功能
+    parameter integer DIP_ACTIVE_LOW=0,  // 拨码开关低电平有效时改1
+    parameter integer DIP_NEAREST=1      // 1: 就近等效角；0: 当前圈内 base+offset
+)(input wire clk,rst_n,key_in,key2_in,
+    input wire [1:0] dip_in,
+    input wire encoder_a,encoder_b,uart_rx,
     input wire [9:0] adc_data_in,input wire adc_otr,
     output wire uart_tx,adc_clk,adc_oe_n,tb_in1,tb_in2,tb_pwm,
     output wire [2:0] led);
@@ -71,6 +76,110 @@ module Top #(
             if(ms_tick) telemetry_count<=(telemetry_count==19)?5'd0:telemetry_count+1'b1;
         end
     end
+    // ---- DIP switch 1/2 -> one-shot position-loop angle target ----
+    // 00: 0 deg, 01: 90 deg, 10: 180 deg, 11: 270 deg.
+    // Only a debounced CHANGE arms one move; the power-up/static switch does nothing.
+    // Multi-turn: normalize position_count into [0,REV), choose the nearest equivalent
+    // target, then keep it inside +/-travel_counts.
+    reg [1:0] dip_meta,dip_sync,dip_sel;
+    reg [3:0] dip_cnt;
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin dip_meta<=0; dip_sync<=0; dip_sel<=0; dip_cnt<=0; end
+        else begin
+            dip_meta<=dip_in;
+            dip_sync<=dip_meta;
+            if(ms_tick) begin
+                if(dip_sync!=dip_sel) begin
+                    if(dip_cnt==4'd9) begin dip_sel<=dip_sync; dip_cnt<=0; end
+                    else dip_cnt<=dip_cnt+1'b1;
+                end else dip_cnt<=0;
+            end
+        end
+    end
+
+    function signed [31:0] angle_counts;
+        input [1:0] code;
+        begin
+            case(code)
+                2'b00: angle_counts=32'sd0;
+                2'b01: angle_counts=COUNTS_PER_REV/4;
+                2'b10: angle_counts=COUNTS_PER_REV/2;
+                default: angle_counts=(COUNTS_PER_REV*3)/4;
+            endcase
+        end
+    endfunction
+
+    reg [1:0] dip_prev;
+    reg dip_armed,dip_pending,dip_active,dip_busy;
+    reg [4:0] dip_boot;
+    reg signed [31:0] dip_offset,dip_hold,dip_rem,dip_pcount,dip_off_work;
+    reg signed [32:0] dip_t_c;
+    wire [1:0] dip_code=DIP_ACTIVE_LOW?~dip_sel:dip_sel;
+    wire signed [32:0] travel_ext=$signed({1'b0,travel_counts});
+
+    // Combinational final target: nearest half-turn equivalent + travel-limit clamp.
+    always @* begin
+        dip_t_c=(dip_pcount-dip_rem)+dip_off_work;
+        if(DIP_NEAREST) begin
+            if((dip_t_c-dip_pcount)>(COUNTS_PER_REV/2))
+                dip_t_c=dip_t_c-COUNTS_PER_REV;
+            else if((dip_t_c-dip_pcount)< -(COUNTS_PER_REV/2))
+                dip_t_c=dip_t_c+COUNTS_PER_REV;
+        end
+        if(dip_t_c>travel_ext) dip_t_c=dip_t_c-COUNTS_PER_REV;
+        else if(dip_t_c< -travel_ext) dip_t_c=dip_t_c+COUNTS_PER_REV;
+        if(dip_t_c>travel_ext) dip_t_c=travel_ext;
+        else if(dip_t_c< -travel_ext) dip_t_c=-travel_ext;
+    end
+
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            dip_prev<=0; dip_armed<=0; dip_pending<=0; dip_active<=0; dip_busy<=0;
+            dip_boot<=0; dip_offset<=0; dip_hold<=0; dip_rem<=0; dip_pcount<=0; dip_off_work<=0;
+        end else begin
+            // Arm after the filter has settled; the power-up DIP value is not a change.
+            if(!dip_armed) begin
+                if(ms_tick) begin
+                    if(dip_boot==5'd19) begin
+                        dip_armed<=1; dip_prev<=dip_sel; dip_boot<=0;
+                    end else dip_boot<=dip_boot+1'b1;
+                end
+            end else if(dip_sel!=dip_prev) begin
+                dip_prev<=dip_sel;
+                dip_offset<=angle_counts(dip_code);
+                dip_pending<=1;
+            end
+
+            // Apply one pending change when the position loop is active.
+            if(DIP_GOAL_ENABLE && dip_pending && !dip_busy &&
+               balancing && dual_loop && !fault_now && position_safe) begin
+                dip_pcount<=position_count;
+                dip_rem<=position_count;
+                dip_off_work<=dip_offset;
+                dip_busy<=1;
+                dip_pending<=0;
+            end
+
+            // Sequential multi-turn normalizer: no divider/DSP, works for many turns.
+            if(dip_busy) begin
+                if(dip_rem>=COUNTS_PER_REV) dip_rem<=dip_rem-COUNTS_PER_REV;
+                else if(dip_rem<0) dip_rem<=dip_rem+COUNTS_PER_REV;
+                else begin
+                    dip_hold<=dip_t_c[31:0];
+                    dip_active<=1;
+                    dip_busy<=0;
+                end
+            end
+
+            // K1 (stop or start) clears the one-shot target; a pending change survives.
+            if(key_press) begin
+                dip_active<=0; dip_hold<=0; dip_busy<=0;
+            end
+        end
+    end
+
+    wire signed [31:0] goal_eff = DIP_GOAL_ENABLE ?
+        (dip_active ? dip_hold : goal_position) : goal_position;
     assign led={(state==4),demo_active_out|key2_state,active};
     board_io #(.MOTOR_DIR_REVERSE(MOTOR_DIR_REVERSE),.ENCODER_DIR_REVERSE(ENCODER_DIR_REVERSE)) io(
         .clk(clk),.rst_n(rst_n),.key_in(key_in),.key2_in(key2_in),.encoder_a(encoder_a),.encoder_b(encoder_b),.uart_rx(uart_rx),
@@ -139,7 +248,7 @@ module Top #(
         .dual_loop(dual_loop),.period_a_ms(period_a_ms),.period_b_ms(period_b_ms),
         .outer_limit_adc(outer_limit_adc),.outer_i_adc(outer_i_adc),
         .inner_limit_percent(inner_limit_percent),.inner_i_percent(inner_i_percent),
-        .center_adc(center_adc),.goal_position(goal_position),.position_count(position_count),.angle_adc(angle_adc),
+        .center_adc(center_adc),.goal_position(goal_eff),.position_count(position_count),.angle_adc(angle_adc),
         .kp_a(kp_a),.ki_a(ki_a),.kd_a(kd_a),.kp_b(kp_b),.ki_b(ki_b),.kd_b(kd_b),
         .epoch_a(epoch_a),.epoch_b(epoch_b),.pid_pwm_ticks(pid_pwm_ticks),
         .a_goal(a_goal),.a_real(a_real),.a_set_ticks(a_set_ticks),.b_goal(b_goal),.b_real(b_real),.b_set_adc(b_set_adc),
