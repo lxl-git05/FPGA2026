@@ -31,11 +31,8 @@ module safety_guard #(parameter integer ADC_RANGE_ONLY=0,
     assign capture_allowed=sensor_ok&&(ADC_RANGE_ONLY||(angle_valid&&raw_in_range))&&(mean_abs<=capture_adc);
     // Range protection uses each inner-loop feedback snapshot, not isolated raw samples.
     assign balance_safe=sensor_ok&&(ADC_RANGE_ONLY||(angle_valid&&raw_in_range))&&(!balance_sample_valid||(balance_abs<=fall_adc));
-    assign fault_reason=!sensor_ok?(otr_fault?4'd2:4'd1):
-                        !position_safe?4'd3:
-                        (balancing&&speed_fault&&overspeed_enabled)?4'd6:
-                        (balancing&&!balance_safe)?4'd4:4'd0;
-    assign fault_now=active&&(fault_reason!=0);
+    // fault_reason/fault_now are placed after the overspeed declarations below
+    // so strict Verilog tools see every identifier before use.
     // Overspeed (fault 6) is suppressed: for the first 3s after entering balance (swing-up
     // momentum) AND during the whole auto-return flow (returning), so the return speed is
     // not misjudged as loss of control. The fallen protection (fault 4) stays active always.
@@ -64,6 +61,11 @@ module safety_guard #(parameter integer ADC_RANGE_ONLY=0,
     reg signed [32:0] pos_prev;
     reg speed_fault;
     reg overspeed_cnt;
+    assign fault_reason=!sensor_ok?(otr_fault?4'd2:4'd1):
+                        !position_safe?4'd3:
+                        (balancing&&speed_fault&&overspeed_enabled)?4'd6:
+                        (balancing&&!balance_safe)?4'd4:4'd0;
+    assign fault_now=active&&(fault_reason!=0);
     wire signed [33:0] speed_delta={position_ext[32],position_ext}-{pos_prev[32],pos_prev};
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin speed_cnt<=0; pos_prev<=0; speed_fault<=0; overspeed_cnt<=0; end

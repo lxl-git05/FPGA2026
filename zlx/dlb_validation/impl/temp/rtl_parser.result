@@ -1,73 +1,81 @@
 [
     {
-        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
         "InstLine": 13,
         "InstName": "Top",
-        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
         "ModuleLine": 13,
         "ModuleName": "Top",
         "SubInsts": [
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 73,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 75,
                 "InstName": "io",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
                 "ModuleLine": 3,
                 "ModuleName": "board_io",
                 "SubInsts": [
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
                         "InstLine": 15,
                         "InstName": "k1",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/PID_Motor/src/Key.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Key.v",
                         "ModuleLine": 19,
                         "ModuleName": "key"
                     },
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
                         "InstLine": 17,
+                        "InstName": "k2",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Key.v",
+                        "ModuleLine": 19,
+                        "ModuleName": "key"
+                    },
+                    {
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
+                        "InstLine": 19,
                         "InstName": "enc",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/encoder_quad.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/encoder_quad.v",
                         "ModuleLine": 36,
                         "ModuleName": "encoder_quad"
                     },
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 19,
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
+                        "InstLine": 21,
                         "InstName": "ad",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/adc_frontend.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/adc_frontend.v",
                         "ModuleLine": 4,
                         "ModuleName": "adc_frontend"
                     },
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 23,
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
+                        "InstLine": 25,
                         "InstName": "rx",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_rx.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/uart_byte_rx.v",
                         "ModuleLine": 36,
                         "ModuleName": "uart_byte_rx"
                     },
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 24,
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
+                        "InstLine": 26,
                         "InstName": "tx",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/uart_loopback/src/uart_byte_tx.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/uart_byte_tx.v",
                         "ModuleLine": 31,
                         "ModuleName": "uart_byte_tx"
                     },
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 26,
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/board_io.v",
+                        "InstLine": 28,
                         "InstName": "motor",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/tb6612_motor_driver.v",
                         "ModuleLine": 38,
                         "ModuleName": "TB6612_Motor_driver",
                         "SubInsts": [
                             {
-                                "InstFile": "D:/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/tb6612_motor_driver.v",
+                                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/tb6612_motor_driver.v",
                                 "InstLine": 134,
                                 "InstName": "u_pwm_gen",
-                                "ModuleFile": "D:/FPGA2026/FPGA2026/DLB/DLB/DLB.srcs/sources_1/new/PWM.v",
+                                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/PWM.v",
                                 "ModuleLine": 48,
                                 "ModuleName": "pwm_gen"
                             }
@@ -76,86 +84,86 @@
                 ]
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 81,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 83,
                 "InstName": "commands",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/command_rx.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/command_rx.v",
                 "ModuleLine": 4,
                 "ModuleName": "command_rx"
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 83,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 85,
                 "InstName": "configuration",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/config_bank.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/config_bank.v",
                 "ModuleLine": 6,
                 "ModuleName": "config_bank",
                 "SubInsts": [
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/config_bank.v",
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/config_bank.v",
                         "InstLine": 58,
                         "InstName": "converter",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/gain_convert.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/gain_convert.v",
                         "ModuleLine": 3,
                         "ModuleName": "gain_convert"
                     }
                 ]
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 113,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 115,
                 "InstName": "guard",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/safety_guard.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/safety_guard.v",
                 "ModuleLine": 6,
                 "ModuleName": "safety_guard"
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 121,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 123,
                 "InstName": "swing",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/swing_up.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/swing_up.v",
                 "ModuleLine": 4,
                 "ModuleName": "swing_up"
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 126,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 128,
                 "InstName": "run",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/run_control.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/run_control.v",
                 "ModuleLine": 10,
                 "ModuleName": "run_control"
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 134,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 136,
                 "InstName": "controller",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/cascade_control.v",
                 "ModuleLine": 10,
                 "ModuleName": "cascade_control",
                 "SubInsts": [
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
-                        "InstLine": 136,
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/cascade_control.v",
+                        "InstLine": 256,
                         "InstName": "pid_a",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/MyPID.v",
                         "ModuleLine": 249,
                         "ModuleName": "PID_Core"
                     },
                     {
-                        "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
-                        "InstLine": 140,
+                        "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/cascade_control.v",
+                        "InstLine": 260,
                         "InstName": "pid_b",
-                        "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
+                        "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/MyPID.v",
                         "ModuleLine": 249,
                         "ModuleName": "PID_Core"
                     }
                 ]
             },
             {
-                "InstFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 146,
+                "InstFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/Top.v",
+                "InstLine": 148,
                 "InstName": "telemetry",
-                "ModuleFile": "D:/FPGA2026/FPGA2026/lxl/GVIN_Study/DLB/src/telemetry_tx.v",
+                "ModuleFile": "D:/FPGA2026/FPGA2026/Claude_Temp/DLB_refactor/gowin/dlb_validation/src/telemetry_tx.v",
                 "ModuleLine": 4,
                 "ModuleName": "telemetry_tx"
             }

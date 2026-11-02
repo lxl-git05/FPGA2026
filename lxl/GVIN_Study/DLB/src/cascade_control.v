@@ -12,6 +12,8 @@ module cascade_control #(
     parameter integer REV_COUNTS=1040, parameter integer ARRIVED=100,
     parameter integer JUMP_THRESH=500
 )(input wire clk,rst_n,ms_tick,enable,capture_clear,auto_retry,dual_loop,
+    input wire move_enable,
+    input wire signed [31:0] move_target,
     input wire [15:0] period_a_ms,period_b_ms,outer_limit_adc,outer_i_adc,
     input wire [7:0] inner_limit_percent,inner_i_percent,
     input wire signed [31:0] center_adc,goal_position,position_count,
@@ -202,8 +204,9 @@ module cascade_control #(
                             sample_kb[2]<=kd_b;
                             i_limit_b<={16'b0,outer_i_adc};
                             if(!auto_retry) begin
-                                // FIRST launch (K1): original behavior untouched
-                                b_target<=goal_position;
+                                // FIRST launch (K1): original behavior, or K2 trajectory target.
+                                if(move_enable) b_target<=move_target;
+                                else            b_target<=goal_position;
                                 b_feedback<=position_count;
                                 limit_b<={16'b0,outer_limit_adc};
                                 sample_kb[1]<=ki_b;

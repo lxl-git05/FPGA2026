@@ -1,15 +1,15 @@
 [
     {
         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-        "InstLine": 13,
+        "InstLine": 15,
         "InstName": "Top",
         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-        "ModuleLine": 13,
+        "ModuleLine": 15,
         "ModuleName": "Top",
         "SubInsts": [
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 73,
+                "InstLine": 78,
                 "InstName": "io",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
                 "ModuleLine": 3,
@@ -26,6 +26,14 @@
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
                         "InstLine": 17,
+                        "InstName": "k2",
+                        "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Key.v",
+                        "ModuleLine": 19,
+                        "ModuleName": "key"
+                    },
+                    {
+                        "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
+                        "InstLine": 19,
                         "InstName": "enc",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/encoder_quad.v",
                         "ModuleLine": 36,
@@ -33,7 +41,7 @@
                     },
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 19,
+                        "InstLine": 21,
                         "InstName": "ad",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/adc_frontend.v",
                         "ModuleLine": 4,
@@ -41,7 +49,7 @@
                     },
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 23,
+                        "InstLine": 25,
                         "InstName": "rx",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/uart_byte_rx.v",
                         "ModuleLine": 36,
@@ -49,7 +57,7 @@
                     },
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 24,
+                        "InstLine": 26,
                         "InstName": "tx",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/uart_byte_tx.v",
                         "ModuleLine": 31,
@@ -57,7 +65,7 @@
                     },
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/board_io.v",
-                        "InstLine": 26,
+                        "InstLine": 28,
                         "InstName": "motor",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/tb6612_motor_driver.v",
                         "ModuleLine": 38,
@@ -77,7 +85,7 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 81,
+                "InstLine": 86,
                 "InstName": "commands",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/command_rx.v",
                 "ModuleLine": 4,
@@ -85,7 +93,7 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 83,
+                "InstLine": 88,
                 "InstName": "configuration",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/config_bank.v",
                 "ModuleLine": 6,
@@ -103,7 +111,7 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 113,
+                "InstLine": 118,
                 "InstName": "guard",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/safety_guard.v",
                 "ModuleLine": 6,
@@ -111,7 +119,7 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 121,
+                "InstLine": 126,
                 "InstName": "swing",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/swing_up.v",
                 "ModuleLine": 4,
@@ -119,7 +127,7 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 126,
+                "InstLine": 131,
                 "InstName": "run",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/run_control.v",
                 "ModuleLine": 10,
@@ -127,7 +135,15 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 134,
+                "InstLine": 146,
+                "InstName": "profile",
+                "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/position_profile.v",
+                "ModuleLine": 31,
+                "ModuleName": "position_profile"
+            },
+            {
+                "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
+                "InstLine": 155,
                 "InstName": "controller",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
                 "ModuleLine": 10,
@@ -135,7 +151,7 @@
                 "SubInsts": [
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
-                        "InstLine": 136,
+                        "InstLine": 138,
                         "InstName": "pid_a",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
                         "ModuleLine": 249,
@@ -143,7 +159,7 @@
                     },
                     {
                         "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/cascade_control.v",
-                        "InstLine": 140,
+                        "InstLine": 142,
                         "InstName": "pid_b",
                         "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/MyPID.v",
                         "ModuleLine": 249,
@@ -153,7 +169,7 @@
             },
             {
                 "InstFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/Top.v",
-                "InstLine": 146,
+                "InstLine": 168,
                 "InstName": "telemetry",
                 "ModuleFile": "D:/FPGA2026/lxl/GVIN_Study/DLB/src/telemetry_tx.v",
                 "ModuleLine": 4,

@@ -12,27 +12,27 @@
   <Part Number>: GW2A-LV55PG484C8/I7
   <Device>: GW2A-55
   <Device Version>: C
-  <Created Time>:Sun Nov  1 18:53:15 2026
+  <Created Time>:Sun Nov  1 20:53:09 2026
 
 
 2. PnR Details
 
   Running placement:
-    Placement Phase 0: CPU time = 0h 0m 2s, Elapsed time = 0h 0m 2s
-    Placement Phase 1: CPU time = 0h 0m 0.994s, Elapsed time = 0h 0m 0.994s
-    Placement Phase 2: CPU time = 0h 0m 8s, Elapsed time = 0h 0m 8s
+    Placement Phase 0: CPU time = 0h 0m 1s, Elapsed time = 0h 0m 1s
+    Placement Phase 1: CPU time = 0h 0m 0.894s, Elapsed time = 0h 0m 0.894s
+    Placement Phase 2: CPU time = 0h 0m 5s, Elapsed time = 0h 0m 5s
     Placement Phase 3: CPU time = 0h 0m 3s, Elapsed time = 0h 0m 3s
-    Total Placement: CPU time = 0h 0m 14s, Elapsed time = 0h 0m 14s
+    Total Placement: CPU time = 0h 0m 10s, Elapsed time = 0h 0m 10s
  Running routing:
-    Routing Phase 0: CPU time = 0h 0m 0.005s, Elapsed time = 0h 0m 0.005s
-    Routing Phase 1: CPU time = 0h 0m 0.484s, Elapsed time = 0h 0m 0.484s
-    Routing Phase 2: CPU time = 0h 0m 9s, Elapsed time = 0h 0m 9s
+    Routing Phase 0: CPU time = 0h 0m 0.004s, Elapsed time = 0h 0m 0.004s
+    Routing Phase 1: CPU time = 0h 0m 0.388s, Elapsed time = 0h 0m 0.388s
+    Routing Phase 2: CPU time = 0h 0m 7s, Elapsed time = 0h 0m 7s
     Routing Phase 3: CPU time = 0h 0m 0s, Elapsed time = 0h 0m 0s
-    Total Routing: CPU time = 0h 0m 10s, Elapsed time = 0h 0m 10s
+    Total Routing: CPU time = 0h 0m 8s, Elapsed time = 0h 0m 8s
  Generate output files:
-    CPU time = 0h 0m 5s, Elapsed time = 0h 0m 5s
+    CPU time = 0h 0m 4s, Elapsed time = 0h 0m 4s
 
- Total Time and Memory Usage: CPU time = 0h 0m 29s, Elapsed time = 0h 0m 29s, Peak memory usage = 983MB
+ Total Time and Memory Usage: CPU time = 0h 0m 22s, Elapsed time = 0h 0m 22s, Peak memory usage = 1125MB
 
 
 3. Resource Usage Summary
@@ -40,20 +40,22 @@
   --------------------------------------------------------------------------------
   Resources                   | Usage                               | Utilization
   --------------------------------------------------------------------------------
-  Logic                       | 7332/54720                          |  14%
-    --LUT,ALU,ROM16           | 7332(5363 LUT, 1969 ALU, 0 ROM16)   | -
+  Logic                       | 7530/54720                          |  14%
+    --LUT,ALU,ROM16           | 7530(5436 LUT, 2094 ALU, 0 ROM16)   | -
     --SSRAM(RAM16)            | 0                                   | -
-  Register                    | 5798/42000                          |  14%
+  Register                    | 5565/42000                          |  14%
     --Logic Register as Latch | 0/41040                             |  0%
-    --Logic Register as FF    | 5782/41040                          |  15%
+    --Logic Register as FF    | 5548/41040                          |  14%
     --I/O Register as Latch   | 0/960                               |  0%
-    --I/O Register as FF      | 16/960                              |  2%
-  CLS                         | 5488/27360                          |  21%
-  I/O Port                    | 26/320                              |  9%
-  I/O Buf                     | 26                                  | -
-    --Input Buf               | 17                                  | -
+    --I/O Register as FF      | 17/960                              |  2%
+  CLS                         | 5304/27360                          |  20%
+  I/O Port                    | 27/320                              |  9%
+  I/O Buf                     | 27                                  | -
+    --Input Buf               | 18                                  | -
     --Output Buf              | 9                                   | -
     --Inout Buf               | 0                                   | -
+  BSRAM                       | 1/140                               | <1%
+    --SDPB                    | 1
   DSP                         | 15.5/20                             | 78%
     --MULT9X9                 | 2
     --MULT36X36               | 6
@@ -70,7 +72,7 @@
   bank 0   | 0/40        | 0%          
   bank 1   | 0/40        | 0%          
   bank 2   | 16/46       | 35%         
-  bank 3   | 4/34        | 12%         
+  bank 3   | 5/34        | 15%         
   bank 4   | 5/40        | 13%         
   bank 5   | 1/40        | 3%          
   bank 6   | 0/34        | 0%          
@@ -95,16 +97,16 @@
   Signal         | Global Clock   | Location
   -------------------------------------------
   clk_d          | PRIMARY        |  TR TL BR BL
-  capture_clear_Z| PRIMARY        |  TR TL BR BL
-  controller/a_goal_31_8| PRIMARY        |  TR BR
+  controller/n8225_6| PRIMARY        |  TR TL BR
+  controller/applied_b_31_6| PRIMARY        |  TR TL BR BL
+  ms_tick        | LW             |  -
   n155_6         | LW             |  -
   commands/n8739_4| LW             |  -
   commands/multiply_acc_127_10| LW             |  -
   configuration/convert_micro_63_9| LW             |  -
   configuration/converter/dividend_127_6| LW             |  -
   configuration/converter/acc_127_7| LW             |  -
-  controller/applied_b_31_8| LW             |  -
-  controller/n5231_8| LW             |  -
+  controller/traj_init| LW             |  -
   ===========================================
 
 
@@ -116,6 +118,7 @@ Port Name       | Diff Pair | Loc./Bank     | Constraint | Dir.  | Site     | CF
 clk             | -         | M19/2         | Y          | in    | IOR44[A] | GCLKT_2         | LVCMOS33   | NA    | NONE      | ON        | NONE       | NA         | NA         | OFF             | NA            | 3.3       
 rst_n           | -         | AB3/5         | Y          | in    | IOB21[A] | -               | LVCMOS33   | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 3.3       
 key_in          | -         | T18/3         | Y          | in    | IOR74[B] | RPLL3_C_in      | LVCMOS15   | NA    | UP        | ON        | NONE       | NA         | NA         | OFF             | NA            | 1.5       
+key2_in         | -         | R18/3         | Y          | in    | IOR74[A] | RPLL3_T_in      | LVCMOS15   | NA    | UP        | ON        | NONE       | NA         | NA         | OFF             | NA            | 1.5       
 encoder_a       | -         | Y20/4         | Y          | in    | IOB89[B] | -               | LVCMOS33   | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 3.3       
 encoder_b       | -         | AA20/4        | Y          | in    | IOB89[A] | -               | LVCMOS33   | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 3.3       
 uart_rx         | -         | L20/2         | Y          | in    | IOR35[B] | RPLL2_C_in      | LVCMOS33   | NA    | UP        | ON        | NONE       | NA         | NA         | OFF             | NA            | 3.3       
@@ -460,7 +463,7 @@ T19/3    | -               | in    | IOR56[A] | SCLK            | LVCMOS15 | NA 
 R19/3    | -               | in    | IOR56[B] | -               | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 1.5  
 Y22/3    | -               | in    | IOR73[A] | -               | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 1.5  
 AA22/3   | -               | in    | IOR73[B] | -               | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 1.5  
-R18/3    | -               | in    | IOR74[A] | RPLL3_T_in      | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 1.5  
+R18/3    | key2_in         | in    | IOR74[A] | RPLL3_T_in      | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | OFF             | NA            | 1.5  
 T18/3    | key_in          | in    | IOR74[B] | RPLL3_C_in      | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | OFF             | NA            | 1.5  
 Y21/3    | -               | in    | IOR76[A] | RPLL3_T_fb      | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 1.5  
 AA21/3   | -               | in    | IOR76[B] | RPLL3_C_fb      | LVCMOS15 | NA    | UP        | ON        | NONE       | NA         | NA         | NA              | NA            | 1.5  

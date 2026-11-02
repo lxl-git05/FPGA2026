@@ -11,7 +11,7 @@ module cascade_control #(
     parameter integer CASCADE_SIGN=-1, parameter integer ANGLE_OUTPUT_SIGN=1,
     parameter integer REV_COUNTS=1040, parameter integer ARRIVED=100,
     parameter integer JUMP_THRESH=500
-)(input wire clk,rst_n,ms_tick,enable,capture_clear,auto_retry,dual_loop,
+)(input wire clk,rst_n,ms_tick,enable,capture_clear,auto_retry,demo_start,dual_loop,
     input wire [15:0] period_a_ms,period_b_ms,outer_limit_adc,outer_i_adc,
     input wire [7:0] inner_limit_percent,inner_i_percent,
     input wire signed [31:0] center_adc,goal_position,position_count,
@@ -21,6 +21,7 @@ module cascade_control #(
     output wire signed [31:0] pid_pwm_ticks,
     output reg signed [31:0] a_goal,a_real,a_set_ticks,b_goal,b_real,b_set_adc,
     output wire returning,
+    output reg demo_active_out,   // travel-in-progress flag (drives a LED)
     output wire a_done,b_done,
     output reg a_sample_valid, output wire [11:0] a_sample_adc);
     localparam IDLE=0,B_TICK=1,B_WAIT=2,A_TICK=3,A_WAIT=4,A_PREP=5;
@@ -79,31 +80,150 @@ module cascade_control #(
     // pos_stable are required before the settle delay starts.
     localparam integer POS_BAND=70;
     reg [6:0] pos_win_cnt;
-    reg [3:0] pos_wr;
     reg [3:0] pos_smp_cnt;
-    reg signed [31:0] pos_hist[0:9];
+    // 10-deep shift chain instead of a dynamic-index array: no mux, saves LUTs
+    reg signed [31:0] ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7,ps8,ps9;
     reg pos_stable;
     reg pos_eval;                       // one-cycle pipeline stage for the stability check
     reg signed [32:0] pos_delta_r;      // registered 1s differential
-    wire signed [32:0] pos_delta_1s={position_count[31],position_count}-{pos_hist[pos_wr][31],pos_hist[pos_wr]};
+    wire signed [32:0] pos_delta_1s={position_count[31],position_count}-{ps9[31],ps9};
     always @(posedge clk or negedge rst_n) begin
-        if(!rst_n) begin pos_win_cnt<=0; pos_wr<=0; pos_smp_cnt<=0; pos_stable<=0; pos_eval<=0; pos_delta_r<=0; end
-        else if(!auto_retry) begin pos_win_cnt<=0; pos_wr<=0; pos_smp_cnt<=0; pos_stable<=0; pos_eval<=0; pos_delta_r<=0; end
+        if(!rst_n) begin pos_win_cnt<=0; pos_smp_cnt<=0; pos_stable<=0; pos_eval<=0; pos_delta_r<=0;
+                      ps0<=0; ps1<=0; ps2<=0; ps3<=0; ps4<=0; ps5<=0; ps6<=0; ps7<=0; ps8<=0; ps9<=0; end
+        else if(!auto_retry) begin pos_win_cnt<=0; pos_smp_cnt<=0; pos_stable<=0; pos_eval<=0; pos_delta_r<=0; end
         else if(ms_tick&&!pos_stable) begin
             if(pos_eval) begin
                 pos_eval<=0;
                 pos_stable<=(pos_smp_cnt>=10)&&(pos_delta_r<=POS_BAND)&&(pos_delta_r>=-POS_BAND);
             end else if(pos_win_cnt==99) begin
                 pos_win_cnt<=0;
-                pos_hist[pos_wr]<=position_count;
-                pos_wr<=(pos_wr==9)?4'd0:pos_wr+1'b1;
+                ps9<=ps8; ps8<=ps7; ps7<=ps6; ps6<=ps5; ps5<=ps4;
+                ps4<=ps3; ps3<=ps2; ps2<=ps1; ps1<=ps0; ps0<=position_count;
                 if(pos_smp_cnt!=10) pos_smp_cnt<=pos_smp_cnt+1'b1;
                 pos_delta_r<=pos_delta_1s;   // register the differential, evaluate next cycle
                 pos_eval<=1;
             end else pos_win_cnt<=pos_win_cnt+1'b1;
         end
     end
-    reg [1:0] return_phase;   // 0=wait both stable, 1=2s settle delay, 2=returning
+    reg [1:0] return_phase;   // 0=wait both stable, 1=settle delay, 2=returning
+    // ---- independent S-curve travel generator (K2 demo, NOT used by the return) ----
+    // Velocity is a QUADRATIC function of time: v(u)=6d/T*u(1-u), position follows
+    // r(u)=r0+d*(3u^2-2u^3). Shape is an 80-entry ROM (Q15) + a serial shift-and-add
+    // multiply: zero hardware multipliers. Completely independent of the pure-PID
+    // return path: K2 only STARTS one travel of +-DEMO_DIST counts.
+    localparam [6:0] TRAJ_TICKS=7'd50;             // B ticks (50 x 50ms = 2.5s)
+    localparam signed [31:0] DEMO_DIST=32'sd1040;  // one K2 travel = one full revolution
+    reg [6:0] traj_k;
+    reg signed [31:0] traj_r0;                  // travel start position (linear counts)
+    reg signed [31:0] traj_d;                   // travel displacement
+    reg signed [31:0] traj_r;                   // current trajectory point (B target)
+    reg traj_init,traj_adv;                     // one-cycle pulses from the main FSM
+    // K2 travel state (round trip: outbound S-curve, then S-curve return - NO PID)
+    reg demo_active;                            // round trip in progress
+    reg demo_phase;                             // 0=outbound, 1=S-curve return
+    reg demo_dir;                               // direction flip: +D / -D alternating
+    reg signed [31:0] demo_d;                   // this segment's displacement
+    reg [6:0] demo_k;                           // segment progress (0..TRAJ_TICKS)
+    // K2 press is a SINGLE-CLOCK pulse; the demo start is only evaluated on the B
+    // boundary (every 50ms), so the pulse must be latched or it is always missed.
+    reg demo_req;
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) demo_req<=0;
+        else if(demo_start) demo_req<=1'b1;              // latch the key press
+        else if(demo_active||!enable) demo_req<=1'b0;    // consumed / not balancing
+    end
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) demo_active_out<=0;
+        else demo_active_out<=demo_active;
+    end
+    // S-curve shape table: shape[k] = round((3u^2-2u^3)*32768), u=k/50 (Q15)
+    reg [15:0] shape_rom[0:49];
+    initial begin
+        shape_rom[0] = 16'd0;
+        shape_rom[1] = 16'd39;
+        shape_rom[2] = 16'd153;
+        shape_rom[3] = 16'd340;
+        shape_rom[4] = 16'd596;
+        shape_rom[5] = 16'd918;
+        shape_rom[6] = 16'd1302;
+        shape_rom[7] = 16'd1747;
+        shape_rom[8] = 16'd2248;
+        shape_rom[9] = 16'd2803;
+        shape_rom[10] = 16'd3408;
+        shape_rom[11] = 16'd4060;
+        shape_rom[12] = 16'd4756;
+        shape_rom[13] = 16'd5493;
+        shape_rom[14] = 16'd6268;
+        shape_rom[15] = 16'd7078;
+        shape_rom[16] = 16'd7919;
+        shape_rom[17] = 16'd8788;
+        shape_rom[18] = 16'd9683;
+        shape_rom[19] = 16'd10599;
+        shape_rom[20] = 16'd11534;
+        shape_rom[21] = 16'd12485;
+        shape_rom[22] = 16'd13449;
+        shape_rom[23] = 16'd14422;
+        shape_rom[24] = 16'd15401;
+        shape_rom[25] = 16'd16384;
+        shape_rom[26] = 16'd17367;
+        shape_rom[27] = 16'd18346;
+        shape_rom[28] = 16'd19319;
+        shape_rom[29] = 16'd20283;
+        shape_rom[30] = 16'd21234;
+        shape_rom[31] = 16'd22169;
+        shape_rom[32] = 16'd23085;
+        shape_rom[33] = 16'd23980;
+        shape_rom[34] = 16'd24849;
+        shape_rom[35] = 16'd25690;
+        shape_rom[36] = 16'd26500;
+        shape_rom[37] = 16'd27275;
+        shape_rom[38] = 16'd28012;
+        shape_rom[39] = 16'd28708;
+        shape_rom[40] = 16'd29360;
+        shape_rom[41] = 16'd29965;
+        shape_rom[42] = 16'd30520;
+        shape_rom[43] = 16'd31021;
+        shape_rom[44] = 16'd31466;
+        shape_rom[45] = 16'd31850;
+        shape_rom[46] = 16'd32172;
+        shape_rom[47] = 16'd32428;
+        shape_rom[48] = 16'd32615;
+        shape_rom[49] = 16'd32729;
+    end
+    // Serial multiply by shift-and-add: d * shape (16 bits) in 17 clocks, NO multiplier
+    // at all (DSP blocks are 80% used and must stay with the PID cores).
+    reg [4:0] mul_cnt;
+    reg signed [31:0] mul_acc,mul_mc;
+    reg [15:0] mul_mp;
+    reg traj_busy;
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin traj_k<=0; traj_r0<=0; traj_d<=0; traj_r<=0;
+                      mul_cnt<=0; mul_acc<=0; mul_mc<=0; mul_mp<=0; traj_busy<=0; end
+        else begin
+            if(traj_init) begin
+                // K2 travel: start from the current cart position (linear counts)
+                traj_r0<=position_count;
+                traj_d<=demo_d;
+                traj_k<=0; traj_r<=position_count; traj_busy<=0; mul_cnt<=0;
+            end else if(traj_adv&&traj_k<TRAJ_TICKS&&!traj_busy) begin
+                traj_k<=traj_k+1'b1;
+                mul_mp<=shape_rom[traj_k];
+                mul_mc<=traj_d;
+                mul_acc<=0; mul_cnt<=0;
+                traj_busy<=1;
+            end else if(traj_busy) begin
+                if(mul_cnt==5'd16) begin
+                    traj_busy<=0;
+                    traj_r<=traj_r0+(mul_acc>>>15);
+                end else begin
+                    if(mul_mp[0]) mul_acc<=mul_acc+mul_mc;
+                    mul_mc<=mul_mc<<<1;
+                    mul_mp<=mul_mp>>1;
+                    mul_cnt<=mul_cnt+1'b1;
+                end
+            end
+        end
+    end
     // mapped-error jump detection: a ring-boundary wrap makes the error jump ~2*HALF_REV.
     reg signed [32:0] mapped_err_prev;
     wire signed [33:0] err_diff={{1{mapped_err[32]}},mapped_err}-{{1{mapped_err_prev[32]}},mapped_err_prev};
@@ -148,7 +268,8 @@ module cascade_control #(
             pending_clear_a<=0;
             applied_a<=0; applied_b<=0;
             a_target<=0; a_feedback<=0; b_target<=0; b_feedback<=0; sampled_center<=0;
-            return_delay<=0; return_phase<=0; hold_pos<=0; mapped_err_prev<=0;
+            return_delay<=0; return_phase<=0; hold_pos<=0; mapped_err_prev<=0; traj_init<=0; traj_adv<=0;
+            demo_active<=0; demo_phase<=0; demo_dir<=0; demo_d<=0; demo_k<=0;
             sample_ka[0]<=0; sample_ka[1]<=0; sample_ka[2]<=0;
             sample_kb[0]<=0; sample_kb[1]<=0; sample_kb[2]<=0;
             limit_a<=0; limit_b<=0; i_limit_a<=0; i_limit_b<=0;
@@ -156,6 +277,7 @@ module cascade_control #(
         end else begin
             a_sample_valid<=0;
             tick_a<=0; tick_b<=0; clear_a<=0; clear_b<=0;
+            traj_init<=0; traj_adv<=0;   // pulses default to zero every cycle
             if(!enable||capture_clear) begin
                 stage<=IDLE; count_a<=0; count_b<=0;
                 pending_clear_a<=0;
@@ -181,7 +303,10 @@ module cascade_control #(
                         if(center_stable&&pos_stable) begin return_phase<=1; return_delay<=11'd1000; end
                     end else if(auto_retry&&return_phase==1) begin
                         if(return_delay>0) return_delay<=return_delay-1'b1;
-                        else return_phase<=2;
+                        else begin
+                            return_phase<=2;
+                            traj_init<=1;   // initialize the S-curve trajectory
+                        end
                     end
                 end
                 if(!dual_loop) begin b_goal<=goal_position; b_real<=position_count; b_set_adc<=0; end
@@ -201,7 +326,31 @@ module cascade_control #(
                             sample_kb[0]<=kp_b;
                             sample_kb[2]<=kd_b;
                             i_limit_b<={16'b0,outer_i_adc};
-                            if(!auto_retry) begin
+                            // K2 demo round trip: outbound S-curve to goal+dir*DEMO_DIST,
+                            // then S-curve RETURN to goal_position (no PID in either leg).
+                            // Pressing K2 again flips the direction.
+                            if(demo_req&&!demo_active&&(!auto_retry||return_phase!=2)) begin
+                                demo_active<=1; demo_phase<=0;
+                                demo_dir<=~demo_dir;
+                                // outbound target = goal + dir*DEMO_DIST, starting now
+                                demo_d<=(demo_dir? -DEMO_DIST:DEMO_DIST)+(goal_position-position_count);
+                                demo_k<=0; traj_init<=1;
+                            end else if(demo_active) begin
+                                if(demo_k<TRAJ_TICKS) begin demo_k<=demo_k+1'b1; traj_adv<=1; end
+                                else if(demo_phase==0) begin
+                                    // outbound finished: S-curve return to the goal position
+                                    demo_phase<=1;
+                                    demo_d<=goal_position-position_count;
+                                    demo_k<=0; traj_init<=1;
+                                end else demo_active<=0;   // round trip finished
+                            end
+                            if(demo_active) begin
+                                // demo travel: track the S-curve point (linear coordinates)
+                                b_target<=traj_r;
+                                b_feedback<=position_count;
+                                limit_b<={16'b0,outer_limit_adc};
+                                sample_kb[1]<=ki_b;
+                            end else if(!auto_retry) begin
                                 // FIRST launch (K1): original behavior untouched
                                 b_target<=goal_position;
                                 b_feedback<=position_count;
@@ -216,9 +365,9 @@ module cascade_control #(
                                 limit_b<={16'b0,outer_limit_adc};
                                 sample_kb[1]<=ki_b;
                             end else begin
-                                // PURE PID return: exactly like changing goal_B - original
-                                // kp_b/ki_b/kd_b and original output limit, no gain switch,
-                                // no Ki gate, no brake cap. The PID converges by itself.
+                                // PURE PID return (unchanged): target = goal, feedback =
+                                // ring-mapped position, original kp_b/ki_b/kd_b and output
+                                // limit. Exactly like changing goal_B.
                                 b_target<=goal_position;
                                 b_feedback<=mapped_pos;
                                 limit_b<={16'b0,outer_limit_adc};
@@ -251,3 +400,7 @@ module cascade_control #(
         end
     end
 endmodule
+
+
+
+

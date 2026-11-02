@@ -14,7 +14,7 @@ module Top #(
     parameter integer MOTOR_DIR_REVERSE=1,ENCODER_DIR_REVERSE=1,
     parameter integer CASCADE_SIGN=1,ANGLE_OUTPUT_SIGN=-1,COUNTS_PER_REV=1040,
     parameter integer ADC_RANGE_ONLY=1 // 1只保留PID采样值范围保护，改0恢复其他ADC判定。
-)(input wire clk,rst_n,key_in,encoder_a,encoder_b,uart_rx,
+)(input wire clk,rst_n,key_in,key2_in,encoder_a,encoder_b,uart_rx,
     input wire [9:0] adc_data_in,input wire adc_otr,
     output wire uart_tx,adc_clk,adc_oe_n,tb_in1,tb_in2,tb_pwm,
     output wire [2:0] led);
@@ -58,6 +58,8 @@ module Top #(
     wire a_done,b_done,telemetry_busy,a_sample_valid;
     wire returning;
     wire [11:0] a_sample_adc;
+    wire key2_press,key2_state;
+    wire demo_active_out;   // K2 travel in progress (LED indicator)
     reg [15:0] ms_counter;
     wire ms_tick=(ms_counter==16'd49999);
     reg [4:0] telemetry_count;
@@ -69,12 +71,12 @@ module Top #(
             if(ms_tick) telemetry_count<=(telemetry_count==19)?5'd0:telemetry_count+1'b1;
         end
     end
-    assign led={(state==4),balancing,active};
+    assign led={(state==4),demo_active_out|key2_state,active};
     board_io #(.MOTOR_DIR_REVERSE(MOTOR_DIR_REVERSE),.ENCODER_DIR_REVERSE(ENCODER_DIR_REVERSE)) io(
-        .clk(clk),.rst_n(rst_n),.key_in(key_in),.encoder_a(encoder_a),.encoder_b(encoder_b),.uart_rx(uart_rx),
+        .clk(clk),.rst_n(rst_n),.key_in(key_in),.key2_in(key2_in),.encoder_a(encoder_a),.encoder_b(encoder_b),.uart_rx(uart_rx),
         .adc_data_in(adc_data_in),.adc_otr(adc_otr),.rail_low(rail_low),.rail_high(rail_high),
         .motor_enable(motor_enable),.motor_pwm_ticks(motor_pwm_ticks),.tx_data(tx_data),.tx_send(tx_send),
-        .uart_tx(uart_tx),.tx_done(tx_done),.rx_data(rx_data),.rx_done(rx_done),.key_press(key_press),
+        .uart_tx(uart_tx),.tx_done(tx_done),.rx_data(rx_data),.rx_done(rx_done),.key_press(key_press),.key2_press(key2_press),.key2_state(key2_state),
         .adc_clk(adc_clk),.adc_oe_n(adc_oe_n),.tb_pwm(tb_pwm),.tb_in1(tb_in1),.tb_in2(tb_in2),
         .raw_adc(raw_adc),.angle_adc(angle_adc),.raw_valid(raw_valid),.raw_otr(raw_otr),
         .window_valid(window_valid),.angle_valid(angle_valid),.encoder_count(encoder_count));
@@ -133,7 +135,7 @@ module Top #(
         .swing_enable(swing_enable),.motor_enable(motor_enable),.motor_pwm_ticks(motor_pwm_ticks));
     cascade_control #(.CASCADE_SIGN(CASCADE_SIGN),.ANGLE_OUTPUT_SIGN(ANGLE_OUTPUT_SIGN),.REV_COUNTS(COUNTS_PER_REV)) controller(
         .clk(clk),.rst_n(rst_n),.ms_tick(ms_tick),.enable(balancing&&!fault_now&&!key_press),.capture_clear(capture_clear),
-        .auto_retry(auto_retry),
+        .auto_retry(auto_retry),.demo_start(key2_press),
         .dual_loop(dual_loop),.period_a_ms(period_a_ms),.period_b_ms(period_b_ms),
         .outer_limit_adc(outer_limit_adc),.outer_i_adc(outer_i_adc),
         .inner_limit_percent(inner_limit_percent),.inner_i_percent(inner_i_percent),
@@ -141,7 +143,7 @@ module Top #(
         .kp_a(kp_a),.ki_a(ki_a),.kd_a(kd_a),.kp_b(kp_b),.ki_b(ki_b),.kd_b(kd_b),
         .epoch_a(epoch_a),.epoch_b(epoch_b),.pid_pwm_ticks(pid_pwm_ticks),
         .a_goal(a_goal),.a_real(a_real),.a_set_ticks(a_set_ticks),.b_goal(b_goal),.b_real(b_real),.b_set_adc(b_set_adc),
-        .returning(returning),
+        .returning(returning),.demo_active_out(demo_active_out),
         .a_done(a_done),.b_done(b_done),.a_sample_valid(a_sample_valid),.a_sample_adc(a_sample_adc));
     telemetry_tx telemetry(.clk(clk),.rst_n(rst_n),.send_frame(send_frame),.tx_done(tx_done),
         .a_goal(a_goal),.a_real(a_real),.a_set_ticks(a_set_ticks),.b_goal(b_goal),.b_real(b_real),.b_set_adc(b_set_adc),

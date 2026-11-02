@@ -16,6 +16,7 @@
         <File path="src/config_bank.v" type="file.verilog" enable="1"/>
         <File path="src/encoder_quad.v" type="file.verilog" enable="1"/>
         <File path="src/gain_convert.v" type="file.verilog" enable="1"/>
+        <File path="src/position_profile.v" type="file.verilog" enable="1"/>
         <File path="src/run_control.v" type="file.verilog" enable="1"/>
         <File path="src/safety_guard.v" type="file.verilog" enable="1"/>
         <File path="src/swing_up.v" type="file.verilog" enable="1"/>
