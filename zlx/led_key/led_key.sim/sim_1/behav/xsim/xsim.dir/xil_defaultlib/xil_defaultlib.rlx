@@ -1,0 +1,7 @@
+0.7
+2020.2
+May 22 2025
+00:13:55
+D:/fpga_gowin/led_key/led_key.sim/sim_1/behav/xsim/glbl.v,1741209010,verilog,,,,glbl,,,,,,,,
+D:/fpga_gowin/led_key/led_key.srcs/sim_1/new/tb_led_key.v,1789529430,verilog,,,,tb_led_key,,,F:/Xilinx/2025.1/Vivado/data/rsb/busdef,,,,,
+D:/fpga_gowin/led_key/led_key.srcs/sources_1/new/led_key.v,1789528984,verilog,,D:/fpga_gowin/led_key/led_key.srcs/sim_1/new/tb_led_key.v,,led_key,,,F:/Xilinx/2025.1/Vivado/data/rsb/busdef,,,,,
